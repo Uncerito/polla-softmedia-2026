@@ -323,6 +323,23 @@ class SupabaseRealClient {
     return { success: true };
   }
 
+  // Actualizar la información de un partido (Acción de Administrador)
+  async updateMatchInfo(partidoId, equipoA, equipoB, fechaHora) {
+    await this.init();
+    
+    const { error } = await this.client
+      .from('partidos')
+      .update({ 
+        equipo_a: equipoA,
+        equipo_b: equipoB,
+        fecha_hora: fechaHora
+      })
+      .eq('id', partidoId);
+
+    if (error) throw error;
+    return { success: true };
+  }
+
   // Obtener el resumen de aciertos en las últimas 24 horas
   async getDailyResults(userId) {
     await this.init();
