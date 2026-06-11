@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import * as Lucide from 'lucide-react';
 
@@ -6,14 +6,49 @@ const html = htm.bind(React.createElement);
 const { Trophy, ChevronLeft, ChevronRight } = Lucide;
 
 function CollaboratorAvatar({ userId, nombre, apellido, className }) {
-  const [imgSrc, setImgSrc] = useState(`./images/colaboradores/${userId}.png`);
+  const getCollaboratorFilename = (nom, ape) => {
+    if (!nom) return '';
+    const clean = (str) => {
+      return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+    };
+    const normNombre = clean(nom);
+    const normApellido = clean(ape || '');
+    const combined = normNombre + normApellido;
+
+    const exceptions = {
+      'marcorumaldo': 'marcoromaldo',
+      'martingonzales': 'martringonzales',
+      'paulmalqui': 'paulmallqui',
+      'kojiropacha': 'kojiropachas',
+      'melisaizquierdo': 'melizamensoza',
+    };
+
+    return exceptions[combined] || combined;
+  };
+
+  const filename = getCollaboratorFilename(nombre, apellido);
+  const [imgSrc, setImgSrc] = useState(filename ? `./images/colaboradores/${filename}.png` : '');
   const [retryJpg, setRetryJpg] = useState(false);
   const [hasError, setHasError] = useState(false);
 
+  useEffect(() => {
+    if (!filename) {
+      setHasError(true);
+    } else {
+      setImgSrc(`./images/colaboradores/${filename}.png`);
+      setRetryJpg(false);
+      setHasError(false);
+    }
+  }, [filename]);
+
   const handleError = () => {
-    if (!retryJpg) {
+    if (!retryJpg && filename) {
       setRetryJpg(true);
-      setImgSrc(`./images/colaboradores/${userId}.jpg`);
+      setImgSrc(`./images/colaboradores/${filename}.jpg`);
     } else {
       setHasError(true);
     }
