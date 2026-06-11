@@ -1,0 +1,271 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@600;800;900&display=swap');
+
+:root {
+  --bg-light: #f1f5f9;
+  --panel-white: #ffffff;
+  --text-dark: #1e293b;
+  --border-light: #e2e8f0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-light) !important;
+  color: var(--text-dark) !important;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.soccer-field-bg {
+  background-color: var(--bg-light) !important;
+  background-image: none !important;
+}
+
+.fixture-list {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .fixture-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1200px) {
+  .fixture-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Forzar paneles y tarjetas blancas limpias con glassmorphism */
+.main-app-container .pixar-card,
+.main-app-container .fixture-list>div,
+.main-app-container .glass-panel,
+.main-app-container .marble-container {
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-radius: 16px !important;
+  color: var(--text-dark) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 90, 54, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-app-container .pixar-card:hover,
+.main-app-container .fixture-list>div:hover,
+.main-app-container .glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -15px rgba(0, 90, 54, 0.18) !important;
+  border-color: rgba(0, 143, 92, 0.3) !important;
+}
+
+/* Corrección de textos para conservar legibilidad en paneles claros */
+.main-app-container .text-slate-900,
+.main-app-container .text-slate-800,
+.main-app-container .text-slate-750,
+.main-app-container .text-slate-700 {
+  color: var(--text-dark) !important;
+}
+
+.main-app-container .text-slate-600,
+.main-app-container .text-slate-550,
+.main-app-container .text-slate-500 {
+  color: #64748b !important;
+}
+
+.main-app-container .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+.main-app-container .bg-slate-50,
+.main-app-container .bg-slate-100 {
+  background-color: #f8fafc !important;
+  border-color: var(--border-light) !important;
+}
+
+/* Botones de predicción */
+.prediction-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+  font-weight: bold !important;
+  font-size: 10px !important;
+  text-transform: uppercase;
+  border-radius: 6px !important;
+}
+
+.prediction-btn:hover:not(:disabled) {
+  background: #e2e8f0 !important;
+}
+
+.prediction-btn.selected {
+  background: #005a36 !important;
+  border-color: #004d30 !important;
+  color: #ffffff !important;
+}
+
+/* Sidebar Activa Verde */
+.sidebar-switch-active {
+  background-color: #005a36 !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+}
+
+.sidebar-switch-active * {
+  color: #ffffff !important;
+}
+
+/* Mantener el texto blanco en componentes con fondos de marca explícitos */
+.main-app-container .bg-\[#008f5c\],
+.main-app-container .bg-\[#008f5c\] *,
+.main-app-container .bg-\[#005a36\],
+.main-app-container .bg-\[#005a36\] *,
+.main-app-container .bg-gradient-to-br {
+  color: #ffffff !important;
+}
+
+.main-app-container [class*="border-\[#2d3535\]"] {
+  border-color: var(--border-light) !important;
+}
+
+.main-app-container .stats-container {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.country-gradient-bar {
+  height: 4px;
+  background: linear-gradient(to right, #005a36, #ffdd00, #d52b1e, #002f6c, #008f5c) !important;
+}
+
+/* Estilos del login */
+.login-container {
+  color: #e2e8f0 !important;
+}
+
+.login-container input {
+  background-color: #0a0d18 !important;
+  color: #ffffff !important;
+  border: 1px solid #222c42 !important;
+}
+
+/* Evitar que el autofill arruine el diseño oscuro */
+.login-container input:-webkit-autofill,
+.login-container input:-webkit-autofill:hover,
+.login-container input:-webkit-autofill:focus,
+.login-container input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #0a0d18 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s;
+  border: 1px solid #222c42 !important;
+}
+
+/* ====================================================================
+   NUEVOS ESTILOS DEL MUNDIAL 2026 (Sedes y Bracket)
+   ==================================================================== */
+
+/* Sedes y Estadios */
+.venue-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  position: relative;
+}
+.venue-card:hover {
+  transform: translateY(-4px);
+}
+.venue-card-img-placeholder {
+  background: linear-gradient(135deg, #005a36 0%, #008f5c 50%, #022b1b 100%);
+  height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.venue-card-img-placeholder::after {
+  content: '🏟️';
+  font-size: 3rem;
+  opacity: 0.25;
+}
+
+
+/* Bracket de Eliminatorias */
+.bracket-wrapper {
+  overflow-x: auto;
+  padding: 20px 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.bracket-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-width: 220px;
+  padding: 0 12px;
+}
+.bracket-match-node {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 12px 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  position: relative;
+  transition: all 0.2s ease;
+}
+.bracket-match-node:hover {
+  border-color: #008f5c;
+  box-shadow: 0 10px 15px -3px rgba(0, 90, 54, 0.1);
+}
+.bracket-team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+.bracket-team-row.winner {
+  font-weight: bold;
+  color: #005a36;
+}
+.bracket-team-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.bracket-team-score {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.bracket-team-row.winner .bracket-team-score {
+  background: #dcfce7;
+  color: #15803d;
+}
+.bracket-header-title {
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+/* Scoreboard digital text */
+.scoreboard-font {
+  font-family: 'Orbitron', monospace !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
