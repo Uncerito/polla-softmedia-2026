@@ -5,26 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pronósticos SoftMedia - Mundial 2026</title>
-  <!-- Limpieza de Caché y Datos por Cambio de Base de Datos -->
-  <script>
-    (async () => {
-      const CURRENT_DB = 'https://oefldbmikcdhrdmatrsx.supabase.co';
-      const savedDb = localStorage.getItem('pollita_db_url');
-      if (savedDb !== CURRENT_DB) {
-        localStorage.clear();
-        sessionStorage.clear();
-        localStorage.setItem('pollita_db_url', CURRENT_DB);
-      }
-      if ('caches' in window) {
-        try {
-          const keys = await caches.keys();
-          await Promise.all(keys.map(key => caches.delete(key)));
-        } catch (e) {
-          console.error('Error limpiando Cache API:', e);
-        }
-      }
-    })();
-  </script>
+  <!-- Open Graph meta tags for rich link preview -->
+  <meta property="og:title" content="Pronósticos SoftMedia – Mundial 2026" />
+  <meta property="og:description" content="Participa en la predicción oficial del Mundial 2026 y compite por el trofeo con SoftMedia." />
+  <meta property="og:image" content="./images/mundial.jpg" />
+  <meta property="og:url" content="https://tudominio.com/" />
+  <meta property="og:type" content="website" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pronósticos SoftMedia – Mundial 2026" />
+  <meta name="twitter:description" content="Participa en la predicción oficial del Mundial 2026 y compite por el trofeo con SoftMedia." />
+  <meta name="twitter:image" content="./images/mundial.jpg" />
   <!-- Tailwind CSS Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
