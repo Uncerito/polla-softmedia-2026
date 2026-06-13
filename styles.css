@@ -16,9 +16,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body.theme-light {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
 .soccer-field-bg {
   background-color: var(--bg-light) !important;
   background-image: radial-gradient(circle at 50% 50%, #151e33 0%, #0a0d18 100%) !important;
+}
+
+body.theme-light .soccer-field-bg {
+  background-color: #f8fafc !important;
+  background-image: radial-gradient(circle at 50% 50%, #e2e8f0 0%, #f8fafc 100%) !important;
 }
 
 .fixture-list {
@@ -38,10 +48,10 @@ body {
   }
 }
 
-/* Forzar paneles y tarjetas oscuras con glassmorphism estilo premium */
-.main-app-container .pixar-card,
-.main-app-container .glass-panel,
-.main-app-container .marble-container {
+/* Forzar paneles y tarjetas oscuras con glassmorphism estilo premium (Tema Oscuro) */
+body:not(.theme-light) .main-app-container .pixar-card,
+body:not(.theme-light) .main-app-container .glass-panel,
+body:not(.theme-light) .main-app-container .marble-container {
   background-color: rgba(19, 25, 41, 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -52,34 +62,54 @@ body {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.main-app-container .pixar-card:hover,
-.main-app-container .glass-panel:hover {
+body.theme-light .main-app-container .pixar-card,
+body.theme-light .main-app-container .glass-panel,
+body.theme-light .main-app-container .marble-container {
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(203, 213, 225, 0.8) !important;
+  border-radius: 16px !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px -10px rgba(148, 163, 184, 0.12) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body:not(.theme-light) .main-app-container .pixar-card:hover,
+body:not(.theme-light) .main-app-container .glass-panel:hover {
   transform: translateY(-2px);
   box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7) !important;
   border-color: #8efad4 !important;
 }
 
+body.theme-light .main-app-container .pixar-card:hover,
+body.theme-light .main-app-container .glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -15px rgba(148, 163, 184, 0.2) !important;
+  border-color: #008f5c !important;
+}
+
 /* Corrección de textos para conservar legibilidad en paneles oscuros */
-.main-app-container .text-slate-900,
-.main-app-container .text-slate-850,
-.main-app-container .text-slate-800,
-.main-app-container .text-slate-750,
-.main-app-container .text-slate-700 {
+body:not(.theme-light) .main-app-container .text-slate-900,
+body:not(.theme-light) .main-app-container .text-slate-850,
+body:not(.theme-light) .main-app-container .text-slate-800,
+body:not(.theme-light) .main-app-container .text-slate-750,
+body:not(.theme-light) .main-app-container .text-slate-700 {
   color: #ffffff !important;
 }
 
-.main-app-container .text-slate-600,
-.main-app-container .text-slate-550,
-.main-app-container .text-slate-500 {
+body:not(.theme-light) .main-app-container .text-slate-600,
+body:not(.theme-light) .main-app-container .text-slate-550,
+body:not(.theme-light) .main-app-container .text-slate-500 {
   color: #94a3b8 !important;
 }
 
-.main-app-container .text-slate-400 {
+body:not(.theme-light) .main-app-container .text-slate-400 {
   color: #64748b !important;
 }
 
-.main-app-container .bg-slate-50,
-.main-app-container .bg-slate-100 {
+body:not(.theme-light) .main-app-container .bg-slate-50,
+body:not(.theme-light) .main-app-container .bg-slate-100 {
   background-color: #0d1220 !important;
   border-color: var(--border-light) !important;
 }
@@ -107,15 +137,26 @@ body {
 }
 
 /* Sidebar Activa con color verde menta y texto negro de la foto */
-.sidebar-switch-active {
+body:not(.theme-light) .sidebar-switch-active {
   background-color: #8efad4 !important;
   color: #0b0e14 !important;
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(142, 250, 212, 0.2);
 }
 
-.sidebar-switch-active * {
+body:not(.theme-light) .sidebar-switch-active * {
   color: #0b0e14 !important;
+}
+
+body.theme-light .sidebar-switch-active {
+  background-color: #008f5c !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 143, 92, 0.2);
+}
+
+body.theme-light .sidebar-switch-active * {
+  color: #ffffff !important;
 }
 
 /* Mantener el texto blanco en componentes con fondos de marca explícitos */
@@ -127,7 +168,7 @@ body {
   color: #ffffff !important;
 }
 
-.main-app-container [class*="border-\[#2d3535\]"] {
+body:not(.theme-light) .main-app-container [class*="border-\[#2d3535\]"] {
   border-color: var(--border-light) !important;
 }
 
@@ -458,149 +499,354 @@ body {
    DARK THEME OVERRIDES FROM THE WORLD CUP SCOREBOARD PHOTO
    ==================================================================== */
 
+/* ====================================================================
+   DARK THEME OVERRIDES FROM THE WORLD CUP SCOREBOARD PHOTO (Tema Oscuro)
+   ==================================================================== */
+
 /* Global container and background overrides */
-.main-app-container {
+body:not(.theme-light) .main-app-container {
   background-color: #0a0d18 !important;
   color: #f1f5f9 !important;
 }
 
 /* Header style overrides */
-.main-app-container header {
+body:not(.theme-light) .main-app-container header {
   background-color: #0b0e14 !important;
   border-bottom: 1px solid #222c42 !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
-.main-app-container header button {
+body:not(.theme-light) .main-app-container header button {
   color: #ffffff !important;
 }
 
-.main-app-container header button:hover {
+body:not(.theme-light) .main-app-container header button:hover {
   color: #8efad4 !important;
 }
 
 /* Profile Dropdown overrides */
-.main-app-container header .absolute {
+body:not(.theme-light) .main-app-container header .absolute {
   background-color: #131929 !important;
   border-color: #222c42 !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
 }
 
-.main-app-container header .absolute button {
+body:not(.theme-light) .main-app-container header .absolute button {
   color: #94a3b8 !important;
 }
 
-.main-app-container header .absolute button:hover {
+body:not(.theme-light) .main-app-container header .absolute button:hover {
   color: #ffffff !important;
   background-color: #1c263c !important;
 }
 
-.main-app-container header .absolute .border-b,
-.main-app-container header .absolute .border-t {
+body:not(.theme-light) .main-app-container header .absolute .border-b,
+body:not(.theme-light) .main-app-container header .absolute .border-t {
   border-color: #222c42 !important;
 }
 
 /* Sidebar and menu overrides */
-.main-app-container aside {
+body:not(.theme-light) .main-app-container aside {
   background-color: #0d1220 !important;
   border-right: 1px solid #222c42 !important;
 }
 
-.main-app-container aside .border-b,
-.main-app-container aside .border-t,
-.main-app-container aside .bg-slate-50 {
+body:not(.theme-light) .main-app-container aside .border-b,
+body:not(.theme-light) .main-app-container aside .border-t,
+body:not(.theme-light) .main-app-container aside .bg-slate-50 {
   border-color: #222c42 !important;
   background-color: #0d1220 !important;
 }
 
-.main-app-container .sidebar-switch {
+body:not(.theme-light) .main-app-container .sidebar-switch {
   color: #94a3b8 !important;
 }
 
-.main-app-container .sidebar-switch:hover {
+body:not(.theme-light) .main-app-container .sidebar-switch:hover {
   color: #8efad4 !important;
 }
 
 /* White background components inside main container override */
-.main-app-container .bg-white {
+body:not(.theme-light) .main-app-container .bg-white {
   background-color: #131929 !important;
   color: #ffffff !important;
 }
 
 /* Border overrides */
-.main-app-container .border-slate-200,
-.main-app-container .border-slate-100,
-.main-app-container .border-slate-300,
-.main-app-container .border-slate-400 {
+body:not(.theme-light) .main-app-container .border-slate-200,
+body:not(.theme-light) .main-app-container .border-slate-100,
+body:not(.theme-light) .main-app-container .border-slate-300,
+body:not(.theme-light) .main-app-container .border-slate-400 {
   border-color: #222c42 !important;
 }
 
 /* Input / Select / Textarea style overrides */
-.main-app-container select,
-.main-app-container input[type="text"],
-.main-app-container input[type="number"],
-.main-app-container input[type="email"],
-.main-app-container input[type="password"] {
+body:not(.theme-light) .main-app-container select,
+body:not(.theme-light) .main-app-container input[type="text"],
+body:not(.theme-light) .main-app-container input[type="number"],
+body:not(.theme-light) .main-app-container input[type="email"],
+body:not(.theme-light) .main-app-container input[type="password"] {
   background-color: #0a0d18 !important;
   color: #ffffff !important;
   border: 1px solid #222c42 !important;
 }
 
-.main-app-container select:focus,
-.main-app-container input:focus {
+body:not(.theme-light) .main-app-container select:focus,
+body:not(.theme-light) .main-app-container input:focus {
   border-color: #8efad4 !important;
   outline: none;
 }
 
 /* Success status text color overrides */
-.main-app-container .text-\[\#005a36\],
-.main-app-container .text-emerald-650 {
+body:not(.theme-light) .main-app-container .text-\[\#005a36\],
+body:not(.theme-light) .main-app-container .text-emerald-650 {
   color: #8efad4 !important;
 }
 
-.main-app-container .bg-emerald-50 {
+body:not(.theme-light) .main-app-container .bg-emerald-50 {
   background-color: rgba(142, 250, 212, 0.08) !important;
   border-color: rgba(142, 250, 212, 0.2) !important;
 }
 
 /* Tab buttons in Dashboard View */
-.main-app-container button.border-\[\#008f5c\] {
+body:not(.theme-light) .main-app-container button.border-\[\#008f5c\] {
   border-color: #8efad4 !important;
   color: #8efad4 !important;
   background-color: #1c263c !important;
 }
 
-.main-app-container button.text-\[\#008f5c\] {
+body:not(.theme-light) .main-app-container button.text-\[\#008f5c\] {
   color: #8efad4 !important;
 }
 
-.main-app-container button.border-transparent:hover {
+body:not(.theme-light) .main-app-container button.border-transparent:hover {
   color: #8efad4 !important;
 }
 
 /* Custom buttons and actions overrides */
-.main-app-container button.bg-\[\#008f5c\],
-.main-app-container button.bg-\[\#005a36\] {
+body:not(.theme-light) .main-app-container button.bg-\[\#008f5c\],
+body:not(.theme-light) .main-app-container button.bg-\[\#005a36\] {
   background-color: #8efad4 !important;
   color: #0a0d18 !important;
   border-color: #8efad4 !important;
   font-weight: 800 !important;
 }
 
-.main-app-container button.bg-\[\#008f5c\]:hover,
-.main-app-container button.bg-\[\#005a36\]:hover {
+body:not(.theme-light) .main-app-container button.bg-\[\#008f5c\]:hover,
+body:not(.theme-light) .main-app-container button.bg-\[\#005a36\]:hover {
   background-color: #73e5bf !important;
   border-color: #73e5bf !important;
 }
 
-.main-app-container button.bg-\[\#008f5c\]:disabled,
-.main-app-container button.bg-\[\#005a36\]:disabled {
+body:not(.theme-light) .main-app-container button.bg-\[\#008f5c\]:disabled,
+body:not(.theme-light) .main-app-container button.bg-\[\#005a36\]:disabled {
   background-color: rgba(142, 250, 212, 0.2) !important;
   color: rgba(255, 255, 255, 0.4) !important;
   border-color: transparent !important;
 }
 
 /* Highlight / exact points styling */
-.main-app-container .text-\[\#8efad4\] {
+body:not(.theme-light) .main-app-container .text-\[\#8efad4\] {
   color: #8efad4 !important;
+}
+
+
+/* ====================================================================
+   LIGHT THEME OVERRIDES (Tema Claro)
+   ==================================================================== */
+
+body.theme-light .main-app-container {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Header style overrides */
+body.theme-light .main-app-container header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 20px rgba(148, 163, 184, 0.08) !important;
+}
+
+body.theme-light .main-app-container header button {
+  color: #475569 !important;
+}
+
+body.theme-light .main-app-container header button:hover {
+  color: #008f5c !important;
+}
+
+/* Profile Dropdown overrides */
+body.theme-light .main-app-container header .absolute {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15) !important;
+}
+
+body.theme-light .main-app-container header .absolute button {
+  color: #475569 !important;
+}
+
+body.theme-light .main-app-container header .absolute button:hover {
+  color: #0f172a !important;
+  background-color: #f1f5f9 !important;
+}
+
+body.theme-light .main-app-container header .absolute .border-b,
+body.theme-light .main-app-container header .absolute .border-t {
+  border-color: #e2e8f0 !important;
+}
+
+/* Sidebar and menu overrides */
+body.theme-light .main-app-container aside {
+  background-color: #f8fafc !important;
+  border-right: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light .main-app-container aside .border-b,
+body.theme-light .main-app-container aside .border-t,
+body.theme-light .main-app-container aside .bg-slate-50 {
+  border-color: #e2e8f0 !important;
+  background-color: #f1f5f9 !important;
+}
+
+body.theme-light .main-app-container .sidebar-switch {
+  color: #475569 !important;
+}
+
+body.theme-light .main-app-container .sidebar-switch:hover {
+  color: #008f5c !important;
+}
+
+/* White background components inside main container override */
+body.theme-light .main-app-container .bg-white {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Border overrides */
+body.theme-light .main-app-container .border-slate-200,
+body.theme-light .main-app-container .border-slate-100,
+body.theme-light .main-app-container .border-slate-300,
+body.theme-light .main-app-container .border-slate-400 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Input / Select / Textarea style overrides */
+body.theme-light .main-app-container select,
+body.theme-light .main-app-container input[type="text"],
+body.theme-light .main-app-container input[type="number"],
+body.theme-light .main-app-container input[type="email"],
+body.theme-light .main-app-container input[type="password"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light .main-app-container select:focus,
+body.theme-light .main-app-container input:focus {
+  border-color: #008f5c !important;
+  outline: none;
+}
+
+/* Success status text color overrides */
+body.theme-light .main-app-container .text-\[\#005a36\],
+body.theme-light .main-app-container .text-emerald-650 {
+  color: #008f5c !important;
+}
+
+body.theme-light .main-app-container .bg-emerald-50 {
+  background-color: rgba(0, 143, 92, 0.05) !important;
+  border-color: rgba(0, 143, 92, 0.15) !important;
+}
+
+/* Tab buttons in Dashboard View */
+body.theme-light .main-app-container button.border-\[\#008f5c\] {
+  border-color: #008f5c !important;
+  color: #008f5c !important;
+  background-color: #f1f5f9 !important;
+}
+
+body.theme-light .main-app-container button.text-\[\#008f5c\] {
+  color: #008f5c !important;
+}
+
+body.theme-light .main-app-container button.border-transparent:hover {
+  color: #008f5c !important;
+}
+
+/* Custom buttons and actions overrides */
+body.theme-light .main-app-container button.bg-\[\#008f5c\],
+body.theme-light .main-app-container button.bg-\[\#005a36\] {
+  background-color: #008f5c !important;
+  color: #ffffff !important;
+  border-color: #008f5c !important;
+  font-weight: 800 !important;
+}
+
+body.theme-light .main-app-container button.bg-\[\#008f5c\]:hover,
+body.theme-light .main-app-container button.bg-\[\#005a36\]:hover {
+  background-color: #006b40 !important;
+  border-color: #006b40 !important;
+}
+
+body.theme-light .main-app-container button.bg-\[\#008f5c\]:disabled,
+body.theme-light .main-app-container button.bg-\[\#005a36\]:disabled {
+  background-color: rgba(0, 143, 92, 0.15) !important;
+  color: rgba(0, 0, 0, 0.3) !important;
+  border-color: transparent !important;
+}
+
+/* Highlight / exact points styling */
+body.theme-light .main-app-container .text-\[\#8efad4\] {
+  color: #008f5c !important;
+}
+
+/* Footer text border */
+body.theme-light footer.border-t {
+  border-color: #cbd5e1 !important;
+}
+
+
+/* ====================================================================
+   PROTECTION RULES: KEEP DARK BACKGROUNDS FOR CARDS & BRACKETS IN LIGHT MODE
+   ==================================================================== */
+
+body.theme-light .wc-match-card-inner,
+body.theme-light .wc-match-card-inner *,
+body.theme-light .wc-bracket-dark,
+body.theme-light .wc-bracket-dark * {
+  color: #ffffff !important;
+}
+
+body.theme-light .wc-match-card-inner .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+body.theme-light .wc-match-card-inner .text-slate-400,
+body.theme-light .wc-match-card-inner .text-slate-450 {
+  color: #94a3b8 !important;
+}
+
+body.theme-light .wc-match-card-inner .wc-score-box,
+body.theme-light .wc-match-card-inner .wc-score-input {
+  color: #0b0e14 !important;
+  background-color: #8efad4 !important;
+}
+
+body.theme-light .wc-match-card-inner .wc-card-footer-banner {
+  color: #000000 !important;
+}
+
+body.theme-light .wc-bracket-dark .bracket-team-row.winner,
+body.theme-light .wc-bracket-dark .bracket-team-row.winner * {
+  color: #8efad4 !important;
+}
+
+body.theme-light .wc-bracket-dark .bracket-team-score {
+  color: #0b0e14 !important;
+  background-color: #8efad4 !important;
+}
+
+body.theme-light .wc-bracket-dark .bracket-footer-mini {
+  color: #000000 !important;
 }

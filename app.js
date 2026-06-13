@@ -19,7 +19,7 @@ const {
   Trophy, Calendar, Users, LogOut, Shield, Award, Edit, Trash,
   Plus, Check, Clock, AlertCircle, Database, ChevronLeft, ChevronRight,
   UserPlus, Settings, Save, RefreshCw, Star, Eye, EyeOff, Menu, X, BarChart3,
-  ChevronDown, BookOpen, GitCommit, MapPin, HelpCircle
+  ChevronDown, BookOpen, GitCommit, MapPin, HelpCircle, Sun, Moon
 } = Lucide;
 
 window.cambiarClaveDentroDelPanel = async () => {
@@ -47,9 +47,27 @@ export function App() {
   const [currentView, setCurrentView] = useState('stats');
   const [loading, setLoading] = useState(true);
 
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('app-theme');
+    return saved || 'dark';
+  });
+
   const [dashboardTab, setDashboardTab] = useState('proximos');
   const [selectedEliminatoria, setSelectedEliminatoria] = useState('Octavos');
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (theme === 'light') {
+      document.body.classList.add('theme-light');
+    } else {
+      document.body.classList.remove('theme-light');
+    }
+    localStorage.setItem('app-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const saved = localStorage.getItem('sidebar_open');
@@ -287,6 +305,10 @@ export function App() {
                   </div>
                 `}
               </div>
+
+              <button onClick=${toggleTheme} class="p-1.5 rounded bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 transition-all shadow-sm" title=${theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>
+                ${theme === 'dark' ? html`<${Sun} size=${14} />` : html`<${Moon} size=${14} />`}
+              </button>
 
               <button onClick=${handleLogout} class="p-1.5 rounded bg-slate-50 border border-slate-200 text-slate-500 hover:bg-rose-50 hover:border-rose-250 hover:text-rose-600 transition-all shadow-sm" title="Cerrar Sesión">
                 <${LogOut} size=${14} />
