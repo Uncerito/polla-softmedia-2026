@@ -18,20 +18,21 @@ export function BracketView({ fixture = [] }) {
   const renderTeam = (teamName, score, isWinner) => {
     const isPlaceholder = !teamName || teamName.includes('Ganador') || teamName.includes('1º') || teamName.includes('2º') || teamName.includes('3º') || teamName.includes('Clasificado');
     const flag = isPlaceholder ? null : getFlagUrl(teamName);
+    const displayTeam = isPlaceholder ? (teamName || 'Por definir') : teamName.toUpperCase();
 
     return html`
-      <div class="bracket-team-row ${isWinner ? 'winner' : ''} flex items-center justify-between py-1 text-slate-800">
+      <div class="bracket-team-row ${isWinner ? 'winner' : ''} flex items-center justify-between py-1 text-white">
         <div class="bracket-team-info flex items-center space-x-1.5 truncate">
           ${flag 
-            ? html`<img src=${flag} class="w-5 h-3.5 rounded object-cover border border-slate-200" />`
+            ? html`<img src=${flag} class="w-5 h-3.5 rounded object-cover border border-white/20 shadow-sm" />`
             : html`<span class="text-[11px] text-slate-400">🏳️</span>`
           }
-          <span class="text-[10px] font-bold truncate max-w-[120px] ${isPlaceholder ? 'text-slate-400 font-normal italic' : ''}">
-            ${teamName || 'Por definir'}
+          <span class="text-[10px] font-black truncate max-w-[125px] font-outfit tracking-wide ${isPlaceholder ? 'text-slate-400 font-normal italic' : 'text-white'}">
+            ${displayTeam}
           </span>
         </div>
         ${score !== null && score !== undefined && html`
-          <span class="bracket-team-score font-bold font-outfit text-[10px] text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded ml-2 shadow-inner">
+          <span class="bracket-team-score font-black font-outfit text-[10px] ml-2">
             ${score}
           </span>
         `}
@@ -44,14 +45,17 @@ export function BracketView({ fixture = [] }) {
     const isWinnerB = result === 'gana_b';
 
     return html`
-      <div class="bracket-match-node text-left select-none relative bg-white border border-slate-200 p-3 rounded-xl shadow-sm">
-        <div class="text-[7px] font-bold text-slate-450 uppercase tracking-widest mb-1 pb-1 border-b border-slate-100 flex items-center justify-between">
+      <div class="bracket-match-node wc-bracket-dark text-left select-none relative">
+        <div class="text-[7px] font-bold text-slate-350 uppercase tracking-widest mb-1.5 pb-1 border-b border-white/10 flex items-center justify-between">
           <span>Match #${matchNum}</span>
-          <span class="font-extrabold text-[#008f5c]">${label}</span>
+          <span class="font-extrabold text-[#8efad4]">${label}</span>
         </div>
         <div class="space-y-1.5">
           ${renderTeam(teamA, scoreA, isWinnerA)}
           ${renderTeam(teamB, scoreB, isWinnerB)}
+        </div>
+        <div class="bracket-footer-mini">
+          FIFA WORLD CUP 2026
         </div>
       </div>
     `;

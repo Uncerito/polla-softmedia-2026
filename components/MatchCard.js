@@ -127,121 +127,165 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
   }).toLowerCase().replace(' ', ''); // ej: "02:00p.m."
 
   return html`
-    <div class="bg-white border border-slate-200 rounded-2xl p-4.5 flex flex-col justify-between transition-all shadow-sm hover:shadow-md hover:border-slate-350 relative ${isUrgent ? 'border-[#005a36] ring-1 ring-[#005a36]/20' : ''} text-slate-800 w-full">
-      
-      <!-- Top Row: Badge de Fase/Grupo y Número de Partido -->
-      <div class="flex items-center justify-between mb-4 w-full">
-        <span class="px-2 py-0.5 rounded bg-sky-50 text-sky-700 text-[9px] font-bold uppercase tracking-wide border border-sky-100">
-          ${partido.grupo ? `Fase de Grupos · ${partido.grupo}` : partido.fase}
-        </span>
-        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-          #${partido.numero_partido}
-        </span>
-      </div>
-
-      <!-- Middle Row: Enfrentamiento (3 Columnas) -->
-      <div class="grid grid-cols-3 items-center w-full my-1.5 gap-2">
-        <!-- Team A -->
-        <div class="flex flex-col items-center justify-center text-center">
-          <img src=${getFlagUrl(partido.equipo_a)} class="w-13 h-8.5 rounded-lg border border-slate-200 object-cover shadow-sm flex-shrink-0" alt=${partido.equipo_a} />
-          <span class="font-sans font-extrabold text-[11px] text-slate-800 tracking-tight leading-tight mt-2 block truncate max-w-full">
-            <span class="mr-0.5" title=${`Mascota: ${charA.name}`}>${charA.emoji}</span>
-            ${partido.equipo_a}
-          </span>
-        </div>
+    <div class="wc-match-card-wrapper">
+      <div class="wc-match-card-inner">
         
-        <!-- Hour and Date Info -->
-        <div class="flex flex-col items-center justify-center text-center">
-          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">${dateStr}</span>
-          <span class="text-[15px] font-black text-slate-900 font-outfit block leading-none py-0.5">${hourStr}</span>
-          <span class="text-[8px] font-bold text-slate-450 uppercase tracking-wider block mt-0.5">America/Lima</span>
-        </div>
-
-        <!-- Team B -->
-        <div class="flex flex-col items-center justify-center text-center">
-          <img src=${getFlagUrl(partido.equipo_b)} class="w-13 h-8.5 rounded-lg border border-slate-200 object-cover shadow-sm flex-shrink-0" alt=${partido.equipo_b} />
-          <span class="font-sans font-extrabold text-[11px] text-slate-800 tracking-tight leading-tight mt-2 block truncate max-w-full">
-            ${partido.equipo_b}
-            <span class="ml-0.5" title=${`Mascota: ${charB.name}`}>${charB.emoji}</span>
+        <!-- Top Row: Fase y Cuenta Regresiva de Tiempo / Candado -->
+        <div class="flex items-center justify-between text-[10px] font-bold tracking-wider mb-4 px-1 text-slate-300">
+          <span class="flex items-center gap-1.5 uppercase font-outfit">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            ${partido.grupo ? `Fase de Grupos · Grupo ${partido.grupo}` : partido.fase}
+          </span>
+          <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[9px] font-black uppercase tracking-widest font-outfit">
+            Partido #${partido.numero_partido}
           </span>
         </div>
-      </div>
 
-      <!-- Venue Info -->
-      <div class="flex items-center justify-center text-[9px] font-bold text-slate-550 uppercase tracking-wider mt-2.5 space-x-1 bg-slate-50 py-1.5 px-3 rounded-lg border border-slate-150">
-        <span class="text-slate-400"><${MapPin} size=${11} /></span>
-        <span class="truncate max-w-[90%]" title="${partido.sede || ''} - ${partido.ciudad || ''}">
-          ${partido.sede || 'Estadio por definir'}${partido.ciudad ? `, ${partido.ciudad}` : ''}
-        </span>
-      </div>
+        <!-- Teams Grid (Dos filas horizontales bien estructuradas) -->
+        <div class="flex flex-col space-y-3 flex-grow justify-center my-1.5">
+          <!-- Team A Row -->
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center space-x-3 truncate">
+              <img src=${getFlagUrl(partido.equipo_a)} class="w-12 h-7.5 rounded border border-white/20 object-cover shadow-md flex-shrink-0" alt=${partido.equipo_a} />
+              <span class="wc-team-name truncate" title=${partido.equipo_a}>
+                <span class="mr-1" title=${`Mascota: ${charA.name}`}>${charA.emoji}</span>
+                ${partido.equipo_a}
+              </span>
+            </div>
+            
+            <!-- Score Box / Input Goles A -->
+            <div class="wc-score-box">
+              ${partido.resultado !== null || isLocked
+                ? html`<span>${partido.resultado !== null ? partido.goles_a : (partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined ? partido.pronostico_goles_a : '-')}</span>`
+                : html`
+                    <input 
+                      type="number" 
+                      min="0"
+                      placeholder="-"
+                      disabled=${isSaving}
+                      value=${userGolesA}
+                      onChange=${e => setUserGolesA(e.target.value)}
+                      class="wc-score-input"
+                    />
+                  `
+              }
+            </div>
+          </div>
 
-      <!-- Bottom Row: Apuesta / Pronóstico (Reemplaza al estadio) -->
-      <div class="border-t border-slate-150 pt-3 mt-3.5 w-full">
-        ${partido.resultado !== null
-          ? html`
-              <!-- Partido Finalizado (Resultado Oficial vs Pronóstico) -->
-              <div class="flex flex-col space-y-1.5 w-full bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <div class="flex items-center justify-between text-[9px] font-extrabold">
-                  <div class="text-slate-500 uppercase tracking-wider">Apuesta: <span class="text-slate-800 font-black">${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}</span></div>
-                  <div class="text-slate-500 uppercase tracking-wider">Oficial: <span class="text-[#008f5c] font-black">${partido.goles_a} - ${partido.goles_b}</span></div>
-                </div>
-                <div class="h-px bg-slate-200"></div>
-                <div class="flex items-center justify-center text-[9px] font-black uppercase tracking-wider ${partido.puntos_pronostico > 0 ? 'text-[#008f5c]' : 'text-rose-600'}">
-                  ${partido.puntos_pronostico === 2 
-                    ? '✓ ¡Score Exacto! (+2 Pts)' 
-                    : partido.puntos_pronostico === 1 
-                      ? '✓ Acertado (+1 Pts)' 
-                      : '✗ No Acertado (0 Pts)'}
-                </div>
-              </div>
-            `
-          : html`
-              <!-- Partido Pendiente (Campos de entrada para apuesta) -->
-              <div class="flex items-center justify-between gap-2.5 bg-slate-50 p-1.5 rounded-xl border border-slate-200 relative">
-                <div class="flex items-center space-x-1.5 flex-grow justify-center">
-                  <span class="text-[9px] font-black text-slate-500 uppercase tracking-wider mr-1">Tú:</span>
-                  <input 
-                    type="number" 
-                    min="0"
-                    placeholder="0"
-                    disabled=${isLocked || isSaving}
-                    value=${userGolesA}
-                    onChange=${e => setUserGolesA(e.target.value)}
-                    class="w-9 h-7 text-center bg-white border border-slate-300 rounded-md text-xs font-black focus:border-[#005a36] focus:ring-1 focus:ring-[#005a36] outline-none disabled:opacity-50"
-                  />
-                  <span class="text-slate-400 font-bold text-xs">-</span>
-                  <input 
-                    type="number" 
-                    min="0"
-                    placeholder="0"
-                    disabled=${isLocked || isSaving}
-                    value=${userGolesB}
-                    onChange=${e => setUserGolesB(e.target.value)}
-                    class="w-9 h-7 text-center bg-white border border-slate-300 rounded-md text-xs font-black focus:border-[#005a36] focus:ring-1 focus:ring-[#005a36] outline-none disabled:opacity-50"
-                  />
-                </div>
+          <!-- Divider Line -->
+          <div class="wc-divider"></div>
 
-                <button 
-                  disabled=${isLocked || isSaving || userGolesA === '' || userGolesB === '' || isSavedUnchanged} 
-                  onClick=${() => onPredict(userGolesA, userGolesB)} 
-                  class="py-1.5 px-3 rounded-lg text-[9px] font-black uppercase transition-all bg-[#005a36] hover:bg-[#004d30] border border-[#005a36] text-white disabled:opacity-50 tracking-wider h-7 flex items-center justify-center cursor-pointer select-none"
-                >
-                  ${isSavedUnchanged ? 'Listo' : 'Guardar'}
-                </button>
+          <!-- Team B Row -->
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center space-x-3 truncate">
+              <img src=${getFlagUrl(partido.equipo_b)} class="w-12 h-7.5 rounded border border-white/20 object-cover shadow-md flex-shrink-0" alt=${partido.equipo_b} />
+              <span class="wc-team-name truncate" title=${partido.equipo_b}>
+                <span class="mr-1" title=${`Mascota: ${charB.name}`}>${charB.emoji}</span>
+                ${partido.equipo_b}
+              </span>
+            </div>
+            
+            <!-- Score Box / Input Goles B -->
+            <div class="wc-score-box">
+              ${partido.resultado !== null || isLocked
+                ? html`<span>${partido.resultado !== null ? partido.goles_b : (partido.pronostico_goles_b !== null && partido.pronostico_goles_b !== undefined ? partido.pronostico_goles_b : '-')}</span>`
+                : html`
+                    <input 
+                      type="number" 
+                      min="0"
+                      placeholder="-"
+                      disabled=${isSaving}
+                      value=${userGolesB}
+                      onChange=${e => setUserGolesB(e.target.value)}
+                      class="wc-score-input"
+                    />
+                  `
+              }
+            </div>
+          </div>
+        </div>
 
-                ${isSaving && html`
-                  <div class="absolute inset-0 bg-white/70 rounded-lg flex items-center justify-center">
-                    <div class="w-4 h-4 border-2 border-[#005a36] border-t-transparent rounded-full animate-spin"></div>
+        <!-- Match Info & Prediction Controls -->
+        <div class="mt-4 pt-3 border-t border-white/10 flex flex-col space-y-2.5">
+          <!-- Date, Time and Stadium Venue -->
+          <div class="flex items-start justify-between gap-2 text-[10px] text-slate-450 font-semibold leading-tight px-1">
+            <div class="flex flex-col space-y-0.5 text-left">
+              <span>📅 ${dateStr} · <span class="text-white font-bold">${hourStr}</span></span>
+              <span class="truncate max-w-[180px] text-[9px] text-slate-400" title=${partido.sede || ''}>🏟️ ${partido.sede || 'Por definir'}</span>
+            </div>
+            <div class="text-right flex flex-col space-y-0.5">
+              <span class="text-slate-400 uppercase tracking-widest text-[8px] font-bold">${timeLeft}</span>
+            </div>
+          </div>
+
+          <!-- Action Panel (Guardar / Pronóstico / Puntos) -->
+          <div class="w-full">
+            ${partido.resultado !== null
+              ? html`
+                  <!-- Partido Finalizado (Resultado Oficial vs Pronóstico) -->
+                  <div class="flex flex-col space-y-1 w-full bg-black/30 border border-white/10 p-2 rounded-xl text-[10px]">
+                    <div class="flex items-center justify-between px-1">
+                      <div class="text-slate-400 font-bold">TU APUESTA: <span class="text-white font-black">${partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined ? `${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}` : 'Ninguna'}</span></div>
+                      <div class="text-slate-400 font-bold">OFICIAL: <span class="text-[#8efad4] font-black">${partido.goles_a} - ${partido.goles_b}</span></div>
+                    </div>
+                    <div class="h-px bg-white/5 my-1"></div>
+                    <div class="flex items-center justify-center font-black uppercase tracking-wider ${partido.puntos_pronostico > 0 ? 'text-[#8efad4]' : 'text-rose-400'}">
+                      ${partido.puntos_pronostico === 2 
+                        ? '✓ ¡Score Exacto! (+2 Pts)' 
+                        : partido.puntos_pronostico === 1 
+                          ? '✓ Acertado (+1 Pts)' 
+                          : '✗ No Acertado (0 Pts)'}
+                    </div>
                   </div>
-                `}
-              </div>
-              ${isLocked && html`
-                <div class="text-[8px] text-center font-bold text-slate-400 uppercase tracking-widest mt-1.5 flex items-center justify-center space-x-1">
-                  <span>🔒 apuestas cerradas</span>
-                </div>
-              `}
-            `
-        }
+                `
+              : html`
+                  <!-- Partido Pendiente / Apuestas Abiertas o Cerradas -->
+                  <div class="flex items-center justify-between gap-2">
+                    <!-- Estado del pronóstico de usuario -->
+                    <div class="text-left px-1 flex flex-col">
+                      <span class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tu Apuesta:</span>
+                      <span class="text-xs font-black text-white">
+                        ${partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined 
+                          ? `${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}` 
+                          : 'Sin pronóstico'}
+                      </span>
+                    </div>
+
+                    ${!isLocked
+                      ? html`
+                          <button 
+                            disabled=${isSaving || userGolesA === '' || userGolesB === '' || isSavedUnchanged} 
+                            onClick=${() => onPredict(userGolesA, userGolesB)} 
+                            class="py-1 px-3.5 rounded-lg text-[10px] font-black uppercase transition-all bg-[#22c55e] hover:bg-[#16a34a] border border-[#22c55e] text-black disabled:opacity-40 disabled:bg-white/10 disabled:border-white/10 disabled:text-slate-400 tracking-wider h-7 flex items-center justify-center cursor-pointer select-none"
+                          >
+                            ${isSavedUnchanged ? 'Listo ✓' : 'Guardar'}
+                          </button>
+                        `
+                      : html`
+                          <div class="flex items-center space-x-1 bg-white/5 border border-white/10 py-1 px-2.5 rounded-lg text-slate-400 text-[9px] font-black uppercase tracking-wider">
+                            <span>🔒 Cerrado</span>
+                          </div>
+                        `
+                    }
+                  </div>
+                `
+            }
+          </div>
+        </div>
+
+        <!-- FIFA World Cup 2026 Footer Banner -->
+        <div class="wc-card-footer-banner">
+          FIFA WORLD CUP 2026
+        </div>
+
+        <!-- Indicador de carga al guardar -->
+        ${isSaving && html`
+          <div class="absolute inset-0 bg-black/70 rounded-[22px] flex flex-col items-center justify-center space-y-2 z-20">
+            <div class="w-6 h-6 border-2 border-[#8efad4] border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-[9px] text-[#8efad4] font-black uppercase tracking-widest animate-pulse">Guardando...</span>
+          </div>
+        `}
+
       </div>
     </div>
   `;

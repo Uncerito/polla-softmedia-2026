@@ -40,7 +40,6 @@ body {
 
 /* Forzar paneles y tarjetas blancas limpias con glassmorphism */
 .main-app-container .pixar-card,
-.main-app-container .fixture-list>div,
 .main-app-container .glass-panel,
 .main-app-container .marble-container {
   background-color: rgba(255, 255, 255, 0.94) !important;
@@ -54,7 +53,6 @@ body {
 }
 
 .main-app-container .pixar-card:hover,
-.main-app-container .fixture-list>div:hover,
 .main-app-container .glass-panel:hover {
   transform: translateY(-2px);
   box-shadow: 0 20px 40px -15px rgba(0, 90, 54, 0.18) !important;
@@ -268,4 +266,187 @@ body {
   font-family: 'Orbitron', monospace !important;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.05em;
+}
+
+/* ====================================================================
+   NUEVOS ESTILOS TARJETA PREMIUM MUNDIAL 2026
+   ==================================================================== */
+
+.wc-match-card-wrapper {
+  position: relative;
+  background: #0b0e14;
+  border-radius: 24px;
+  padding: 2.5px; /* grosor del borde */
+  background-image: linear-gradient(135deg, #a855f7 0%, #22c55e 30%, #3b82f6 70%, #f97316 100%);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.wc-match-card-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  background-image: linear-gradient(135deg, #b865ff 0%, #32d56e 30%, #4b92ff 70%, #ff8326 100%);
+}
+
+.wc-match-card-inner {
+  background: radial-gradient(circle at center, rgba(11, 14, 23, 0.84) 0%, rgba(7, 9, 15, 0.96) 100%), 
+              url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80') no-repeat center/cover;
+  border-radius: 21.5px; /* 24px - 2.5px */
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Recuadro de los goles estilo verde menta / turquesa */
+.wc-score-box {
+  background-color: #8efad4 !important;
+  color: #0b0e14 !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 900 !important;
+  width: 44px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 1.25rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Inputs embebidos dentro de la caja de goles */
+.wc-score-input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  color: #0b0e14 !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 900 !important;
+  font-size: 1.25rem !important;
+  width: 100% !important;
+  height: 100% !important;
+  text-align: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  -moz-appearance: textfield !important;
+}
+
+.wc-score-input::-webkit-outer-spin-button,
+.wc-score-input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+/* Banner inferior */
+.wc-card-footer-banner {
+  margin-left: -16px;
+  margin-right: -16px;
+  margin-bottom: -16px;
+  margin-top: 14px;
+  padding: 6px 12px;
+  background: linear-gradient(90deg, #f97316 0%, #eab308 20%, #22c55e 50%, #3b82f6 100%);
+  text-align: center;
+  color: #000000 !important;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.wc-team-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.wc-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.12);
+  width: 100%;
+}
+
+/* Rediseño del Bracket a Oscuro */
+.bracket-match-node.wc-bracket-dark {
+  background: radial-gradient(circle at center, rgba(16, 20, 32, 0.9) 0%, rgba(10, 12, 18, 0.98) 100%),
+              url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=300&q=80') no-repeat center/cover !important;
+  color: #ffffff !important;
+  border: 1.5px solid transparent !important;
+  background-clip: padding-box !important;
+  position: relative;
+  border-radius: 14px !important;
+  padding: 10px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.bracket-match-node.wc-bracket-dark::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: -1;
+  margin: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #a855f7, #22c55e, #3b82f6, #f97316);
+}
+
+.bracket-match-node.wc-bracket-dark:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+.bracket-match-node.wc-bracket-dark .bracket-team-row {
+  color: #ffffff !important;
+}
+
+.bracket-match-node.wc-bracket-dark .bracket-team-row.winner {
+  color: #8efad4 !important;
+  font-weight: 900 !important;
+}
+
+.bracket-match-node.wc-bracket-dark .bracket-team-score {
+  background-color: #8efad4 !important;
+  color: #0b0e14 !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 900 !important;
+  border-radius: 5px !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+
+.bracket-match-node.wc-bracket-dark .bracket-team-row.winner .bracket-team-score {
+  background-color: #22c55e !important;
+  color: #ffffff !important;
+}
+
+.bracket-match-node.wc-bracket-dark .bracket-footer-mini {
+  margin-left: -10px;
+  margin-right: -10px;
+  margin-bottom: -10px;
+  margin-top: 8px;
+  padding: 4px 6px;
+  background: linear-gradient(90deg, #f97316 0%, #eab308 20%, #22c55e 50%, #3b82f6 100%);
+  text-align: center;
+  color: #000000 !important;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
