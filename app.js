@@ -231,7 +231,7 @@ export function App() {
   ];
 
   return html`
-    <div class="min-h-screen flex flex-col relative overflow-hidden soccer-field-bg main-app-container" style=${{ backgroundColor: '#f1f5f9' }}>
+    <div class="min-h-screen flex flex-col relative overflow-hidden soccer-field-bg main-app-container">
       <div class="relative z-10 flex flex-col min-h-screen">
         <div class="fixed top-4 right-4 z-50 flex flex-col space-y-2 max-w-sm">
           ${toasts.map(toast => html`

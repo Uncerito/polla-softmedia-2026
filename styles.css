@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Orbitron:wght@600;800;900&display=swap');
 
 :root {
-  --bg-light: #f1f5f9;
-  --panel-white: #ffffff;
-  --text-dark: #1e293b;
-  --border-light: #e2e8f0;
+  --bg-light: #0a0d18;
+  --panel-white: #131929;
+  --text-dark: #ffffff;
+  --border-light: #222c42;
 }
 
 body {
@@ -18,7 +18,7 @@ body {
 
 .soccer-field-bg {
   background-color: var(--bg-light) !important;
-  background-image: none !important;
+  background-image: radial-gradient(circle at 50% 50%, #151e33 0%, #0a0d18 100%) !important;
 }
 
 .fixture-list {
@@ -38,56 +38,57 @@ body {
   }
 }
 
-/* Forzar paneles y tarjetas blancas limpias con glassmorphism */
+/* Forzar paneles y tarjetas oscuras con glassmorphism estilo premium */
 .main-app-container .pixar-card,
 .main-app-container .glass-panel,
 .main-app-container .marble-container {
-  background-color: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  background-color: rgba(19, 25, 41, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(34, 44, 66, 0.7) !important;
   border-radius: 16px !important;
   color: var(--text-dark) !important;
-  box-shadow: 0 10px 30px -10px rgba(0, 90, 54, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.02) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-app-container .pixar-card:hover,
 .main-app-container .glass-panel:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px -15px rgba(0, 90, 54, 0.18) !important;
-  border-color: rgba(0, 143, 92, 0.3) !important;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7) !important;
+  border-color: #8efad4 !important;
 }
 
-/* Corrección de textos para conservar legibilidad en paneles claros */
+/* Corrección de textos para conservar legibilidad en paneles oscuros */
 .main-app-container .text-slate-900,
+.main-app-container .text-slate-850,
 .main-app-container .text-slate-800,
 .main-app-container .text-slate-750,
 .main-app-container .text-slate-700 {
-  color: var(--text-dark) !important;
+  color: #ffffff !important;
 }
 
 .main-app-container .text-slate-600,
 .main-app-container .text-slate-550,
 .main-app-container .text-slate-500 {
-  color: #64748b !important;
+  color: #94a3b8 !important;
 }
 
 .main-app-container .text-slate-400 {
-  color: #94a3b8 !important;
+  color: #64748b !important;
 }
 
 .main-app-container .bg-slate-50,
 .main-app-container .bg-slate-100 {
-  background-color: #f8fafc !important;
+  background-color: #0d1220 !important;
   border-color: var(--border-light) !important;
 }
 
 /* Botones de predicción */
 .prediction-btn {
-  background: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-  color: #475569 !important;
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #cbd5e1 !important;
   font-weight: bold !important;
   font-size: 10px !important;
   text-transform: uppercase;
@@ -95,24 +96,26 @@ body {
 }
 
 .prediction-btn:hover:not(:disabled) {
-  background: #e2e8f0 !important;
+  background: #334155 !important;
+  color: #ffffff !important;
 }
 
 .prediction-btn.selected {
-  background: #005a36 !important;
-  border-color: #004d30 !important;
-  color: #ffffff !important;
+  background: #8efad4 !important;
+  border-color: #8efad4 !important;
+  color: #0b0e14 !important;
 }
 
-/* Sidebar Activa Verde */
+/* Sidebar Activa con color verde menta y texto negro de la foto */
 .sidebar-switch-active {
-  background-color: #005a36 !important;
-  color: #ffffff !important;
+  background-color: #8efad4 !important;
+  color: #0b0e14 !important;
   border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(142, 250, 212, 0.2);
 }
 
 .sidebar-switch-active * {
-  color: #ffffff !important;
+  color: #0b0e14 !important;
 }
 
 /* Mantener el texto blanco en componentes con fondos de marca explícitos */
@@ -449,4 +452,155 @@ body {
   font-size: 7px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+/* ====================================================================
+   DARK THEME OVERRIDES FROM THE WORLD CUP SCOREBOARD PHOTO
+   ==================================================================== */
+
+/* Global container and background overrides */
+.main-app-container {
+  background-color: #0a0d18 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Header style overrides */
+.main-app-container header {
+  background-color: #0b0e14 !important;
+  border-bottom: 1px solid #222c42 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+.main-app-container header button {
+  color: #ffffff !important;
+}
+
+.main-app-container header button:hover {
+  color: #8efad4 !important;
+}
+
+/* Profile Dropdown overrides */
+.main-app-container header .absolute {
+  background-color: #131929 !important;
+  border-color: #222c42 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+.main-app-container header .absolute button {
+  color: #94a3b8 !important;
+}
+
+.main-app-container header .absolute button:hover {
+  color: #ffffff !important;
+  background-color: #1c263c !important;
+}
+
+.main-app-container header .absolute .border-b,
+.main-app-container header .absolute .border-t {
+  border-color: #222c42 !important;
+}
+
+/* Sidebar and menu overrides */
+.main-app-container aside {
+  background-color: #0d1220 !important;
+  border-right: 1px solid #222c42 !important;
+}
+
+.main-app-container aside .border-b,
+.main-app-container aside .border-t,
+.main-app-container aside .bg-slate-50 {
+  border-color: #222c42 !important;
+  background-color: #0d1220 !important;
+}
+
+.main-app-container .sidebar-switch {
+  color: #94a3b8 !important;
+}
+
+.main-app-container .sidebar-switch:hover {
+  color: #8efad4 !important;
+}
+
+/* White background components inside main container override */
+.main-app-container .bg-white {
+  background-color: #131929 !important;
+  color: #ffffff !important;
+}
+
+/* Border overrides */
+.main-app-container .border-slate-200,
+.main-app-container .border-slate-100,
+.main-app-container .border-slate-300,
+.main-app-container .border-slate-400 {
+  border-color: #222c42 !important;
+}
+
+/* Input / Select / Textarea style overrides */
+.main-app-container select,
+.main-app-container input[type="text"],
+.main-app-container input[type="number"],
+.main-app-container input[type="email"],
+.main-app-container input[type="password"] {
+  background-color: #0a0d18 !important;
+  color: #ffffff !important;
+  border: 1px solid #222c42 !important;
+}
+
+.main-app-container select:focus,
+.main-app-container input:focus {
+  border-color: #8efad4 !important;
+  outline: none;
+}
+
+/* Success status text color overrides */
+.main-app-container .text-\[\#005a36\],
+.main-app-container .text-emerald-650 {
+  color: #8efad4 !important;
+}
+
+.main-app-container .bg-emerald-50 {
+  background-color: rgba(142, 250, 212, 0.08) !important;
+  border-color: rgba(142, 250, 212, 0.2) !important;
+}
+
+/* Tab buttons in Dashboard View */
+.main-app-container button.border-\[\#008f5c\] {
+  border-color: #8efad4 !important;
+  color: #8efad4 !important;
+  background-color: #1c263c !important;
+}
+
+.main-app-container button.text-\[\#008f5c\] {
+  color: #8efad4 !important;
+}
+
+.main-app-container button.border-transparent:hover {
+  color: #8efad4 !important;
+}
+
+/* Custom buttons and actions overrides */
+.main-app-container button.bg-\[\#008f5c\],
+.main-app-container button.bg-\[\#005a36\] {
+  background-color: #8efad4 !important;
+  color: #0a0d18 !important;
+  border-color: #8efad4 !important;
+  font-weight: 800 !important;
+}
+
+.main-app-container button.bg-\[\#008f5c\]:hover,
+.main-app-container button.bg-\[\#005a36\]:hover {
+  background-color: #73e5bf !important;
+  border-color: #73e5bf !important;
+}
+
+.main-app-container button.bg-\[\#008f5c\]:disabled,
+.main-app-container button.bg-\[\#005a36\]:disabled {
+  background-color: rgba(142, 250, 212, 0.2) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  border-color: transparent !important;
+}
+
+/* Highlight / exact points styling */
+.main-app-container .text-\[\#8efad4\] {
+  color: #8efad4 !important;
 }
