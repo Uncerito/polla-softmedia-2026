@@ -12,10 +12,6 @@ export function LoginView({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [recoveryStatus, setRecoveryStatus] = useState(null); // { message, type }
-  const [randomImage] = useState(() => {
-    const portadas = ['image01.jpeg', 'image02.jpeg', 'image03.jpeg', 'image04.jpeg'];
-    return portadas[Math.floor(Math.random() * portadas.length)];
-  });
 
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const targetDate = new Date('2026-06-11T14:00:00-05:00').getTime();
@@ -68,8 +64,9 @@ export function LoginView({ onLogin }) {
   return html`
     <div class="login-container h-screen w-full bg-[#0a0d18] flex flex-col md:flex-row overflow-hidden select-none text-slate-200">
       
-      <div class="hidden md:flex md:w-1/2 relative h-full bg-white items-center justify-center overflow-hidden">
-        <img src=${`./images/portada/${randomImage}`} alt="Portada Mundial 2026" class="object-contain w-full h-full select-none" />
+      <div class="hidden md:flex md:w-1/2 relative h-full bg-[#0a0d18] items-center justify-center overflow-hidden">
+        <img src="./images/portada/fondomundial.png" alt="Portada Mundial 2026" class="object-cover w-full h-full select-none" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0d18]/40 to-transparent pointer-events-none"></div>
       </div>
 
       <div class="w-full md:w-1/2 h-full flex flex-col justify-center items-center p-6 sm:p-12 md:p-16 bg-[#131929] relative overflow-y-auto overflow-x-hidden">
