@@ -245,7 +245,8 @@ class SupabaseRealClient {
         .update({ 
           prediccion,
           goles_a: Number(golesA),
-          goles_b: Number(golesB)
+          goles_b: Number(golesB),
+          creado_en: new Date().toISOString()
         })
         .eq('id', existente.id);
       if (error) throw error;
@@ -269,14 +270,77 @@ class SupabaseRealClient {
   async getLeaderboard() {
     await this.init();
     
+    // 1. Obtener el último partido terminado
+    const { data: ultimoPartido, error: epError } = await this.client
+      .from('partidos')
+      .select('id')
+      .not('resultado', 'is', null)
+      .order('fecha_hora', { ascending: false })
+      .order('numero_partido', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let pronosticosMap = {};
+    if (!epError && ultimoPartido) {
+      // 2. Obtener todos los pronósticos para ese partido
+      const { data: pronosticos, error: pronosError } = await this.client
+        .from('pronosticos')
+        .select('usuario_id, creado_en')
+        .eq('partido_id', ultimoPartido.id);
+
+      if (!pronosError && pronosticos) {
+        pronosticos.forEach(p => {
+          pronosticosMap[p.usuario_id] = p.creado_en;
+        });
+      }
+    }
+
     const { data, error } = await this.client
       .from('usuarios')
-      .select('id, nombre, apellido, puntos_totales')
-      .order('puntos_totales', { ascending: false });
+      .select('id, nombre, apellido, puntos_totales');
 
     if (error) throw error;
 
-    return data.map((u, index) => ({
+    // Agregar la hora de la apuesta del último partido terminado a cada usuario
+    const leaderboardWithTime = data.map(u => ({
+      ...u,
+      fecha_apuesta_ultimo_partido: pronosticosMap[u.id] || null
+    }));
+
+    // Ordenar:
+    // 1. Puntos totales desc
+    // 2. Si hay empate, por la fecha de la apuesta del último partido terminado (más antigua/ascendente)
+    //    Si uno no tiene apuesta, va al final (fecha_apuesta_ultimo_partido es null)
+    // 3. Si persiste el empate (o si no hay partido terminado), alfabéticamente
+    leaderboardWithTime.sort((a, b) => {
+      const ptsA = typeof a.puntos_totales === 'number' ? a.puntos_totales : 0;
+      const ptsB = typeof b.puntos_totales === 'number' ? b.puntos_totales : 0;
+      if (ptsB !== ptsA) {
+        return ptsB - ptsA;
+      }
+
+      const timeA = a.fecha_apuesta_ultimo_partido;
+      const timeB = b.fecha_apuesta_ultimo_partido;
+
+      if (timeA && timeB) {
+        const dateA = new Date(timeA).getTime();
+        const dateB = new Date(timeB).getTime();
+        if (dateA !== dateB) {
+          return dateA - dateB; // Más antiguo primero (orden ascendente)
+        }
+      } else if (timeA && !timeB) {
+        return -1; // a tiene apuesta, b no. a va primero.
+      } else if (!timeA && timeB) {
+        return 1; // b tiene apuesta, a no. b va primero.
+      }
+
+      // Fallback alfabético
+      const nameA = `${a.nombre} ${a.apellido}`.toLowerCase();
+      const nameB = `${b.nombre} ${b.apellido}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+
+    return leaderboardWithTime.map((u, index) => ({
       ...u,
       puesto: index + 1
     }));

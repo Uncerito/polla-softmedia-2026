@@ -78,13 +78,29 @@ export function LeaderboardView({ leaderboard, session }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  // 1. Ordenar clasificación: puntaje descendente, y en caso de empate, alfabéticamente
+  // 1. Ordenar clasificación: puntaje descendente, y en caso de empate, por hora de apuesta del último partido culminado (más antigua primero), y si persiste, alfabéticamente
   const sortedData = [...leaderboard].sort((a, b) => {
     const ptsA = typeof a.puntos_totales === 'number' ? a.puntos_totales : (a.puntos || 0);
     const ptsB = typeof b.puntos_totales === 'number' ? b.puntos_totales : (b.puntos || 0);
     if (ptsB !== ptsA) {
       return ptsB - ptsA;
     }
+
+    // Desempate por la hora de apuesta del último partido culminado (más antigua primero)
+    const timeA = a.fecha_apuesta_ultimo_partido;
+    const timeB = b.fecha_apuesta_ultimo_partido;
+    if (timeA && timeB) {
+      const dateA = new Date(timeA).getTime();
+      const dateB = new Date(timeB).getTime();
+      if (dateA !== dateB) {
+        return dateA - dateB;
+      }
+    } else if (timeA && !timeB) {
+      return -1;
+    } else if (!timeA && timeB) {
+      return 1;
+    }
+
     const nameA = `${a.nombre} ${a.apellido}`.toLowerCase();
     const nameB = `${b.nombre} ${b.apellido}`.toLowerCase();
     return nameA.localeCompare(nameB);
