@@ -267,30 +267,87 @@ class SupabaseRealClient {
   }
 
   // Obtener Tabla de Posiciones Global (Ranking)
+  // Obtener Tabla de Posiciones Global (Ranking)
   async getLeaderboard() {
     await this.init();
     
-    // 1. Obtener el último partido terminado
-    const { data: ultimoPartido, error: epError } = await this.client
+    // 1. Intentar obtener el último partido en curso (comenzado pero sin resultado)
+    const { data: partidoEnCurso, error: ecError } = await this.client
       .from('partidos')
-      .select('id')
-      .not('resultado', 'is', null)
+      .select('id, numero_partido, fecha_hora, equipo_a, equipo_b')
+      .lte('fecha_hora', new Date().toISOString())
+      .is('resultado', null)
       .order('fecha_hora', { ascending: false })
       .order('numero_partido', { ascending: false })
       .limit(1)
       .maybeSingle();
 
+    let partidoReferencia = null;
+    let esEnCurso = false;
+
+    if (!ecError && partidoEnCurso) {
+      partidoReferencia = partidoEnCurso;
+      esEnCurso = true;
+    } else {
+      // 2. Si no hay en curso, obtener el último partido terminado
+      const { data: ultimoTerminado, error: etError } = await this.client
+        .from('partidos')
+        .select('id, numero_partido, fecha_hora, equipo_a, equipo_b')
+        .not('resultado', 'is', null)
+        .order('fecha_hora', { ascending: false })
+        .order('numero_partido', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!etError && ultimoTerminado) {
+        partidoReferencia = ultimoTerminado;
+      }
+    }
+
+    let partidoReferenciaDescripcion = '';
+    if (partidoReferencia) {
+      partidoReferenciaDescripcion = `${partidoReferencia.equipo_a} vs ${partidoReferencia.equipo_b} (P#${partidoReferencia.numero_partido})`;
+    }
+
     let pronosticosMap = {};
-    if (!epError && ultimoPartido) {
-      // 2. Obtener todos los pronósticos para ese partido
+    if (partidoReferencia) {
+      // 3. Obtener todos los pronósticos para ese partido
       const { data: pronosticos, error: pronosError } = await this.client
         .from('pronosticos')
         .select('usuario_id, creado_en')
-        .eq('partido_id', ultimoPartido.id);
+        .eq('partido_id', partidoReferencia.id);
 
       if (!pronosError && pronosticos) {
         pronosticos.forEach(p => {
           pronosticosMap[p.usuario_id] = p.creado_en;
+        });
+      }
+    }
+
+    // 4. Obtener todos los partidos terminados para calcular estadísticas de aciertos/fallos
+    const { data: finishedMatches, error: fmError } = await this.client
+      .from('partidos')
+      .select('id')
+      .not('resultado', 'is', null);
+
+    const finishedMatchIds = finishedMatches ? finishedMatches.map(m => m.id) : [];
+    const totalFinished = finishedMatchIds.length;
+
+    let pronosticosFinMap = {}; // mapping: usuario_id -> count of puntos_ganados > 0
+    if (totalFinished > 0) {
+      const { data: pronosticosFin, error: pfError } = await this.client
+        .from('pronosticos')
+        .select('usuario_id, puntos_ganados')
+        .in('partido_id', finishedMatchIds);
+        
+      if (!pfError && pronosticosFin) {
+        pronosticosFin.forEach(p => {
+          if (!pronosticosFinMap[p.usuario_id]) {
+            pronosticosFinMap[p.usuario_id] = 0;
+          }
+          if (p.puntos_ganados > 0) {
+            pronosticosFinMap[p.usuario_id]++;
+          }
         });
       }
     }
@@ -301,11 +358,19 @@ class SupabaseRealClient {
 
     if (error) throw error;
 
-    // Agregar la hora de la apuesta del último partido terminado a cada usuario
-    const leaderboardWithTime = data.map(u => ({
-      ...u,
-      fecha_apuesta_ultimo_partido: pronosticosMap[u.id] || null
-    }));
+    // Agregar la hora de la apuesta del último partido terminado a cada usuario, más estadísticas
+    const leaderboardWithTime = data.map(u => {
+      const acertados = pronosticosFinMap[u.id] || 0;
+      const perdidos = totalFinished - acertados;
+      return {
+        ...u,
+        fecha_apuesta_ultimo_partido: pronosticosMap[u.id] || null,
+        partido_referencia_descripcion: partidoReferenciaDescripcion,
+        partido_referencia_es_en_curso: esEnCurso,
+        acertados,
+        perdidos
+      };
+    });
 
     // Ordenar:
     // 1. Puntos totales desc

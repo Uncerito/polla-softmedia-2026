@@ -5,6 +5,25 @@ import * as Lucide from 'lucide-react';
 const html = htm.bind(React.createElement);
 const { Trophy, ChevronLeft, ChevronRight } = Lucide;
 
+function formatPredictionDate(dateStr) {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  const d = date.toLocaleDateString('es-PE', {
+    timeZone: 'America/Lima',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const t = date.toLocaleTimeString('es-PE', {
+    timeZone: 'America/Lima',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  return `${d} ${t}`;
+}
+
 function CollaboratorAvatar({ userId, nombre, apellido, className }) {
   const getCollaboratorFilename = (nom, ape) => {
     if (!nom) return '';
@@ -179,12 +198,25 @@ export function LeaderboardView({ leaderboard, session }) {
                 <span class="text-xs sm:text-sm font-bold text-slate-800 truncate max-w-full leading-tight">
                   ${user.nombre}
                 </span>
+
+                <!-- Estadísticas de Aciertos/Fallos en Podio -->
+                <div class="flex items-center justify-center space-x-2 mt-1.5 text-[9px] font-bold">
+                  <span class="text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100" title="Acertados">🟢 ${user.acertados || 0}</span>
+                  <span class="text-rose-600 bg-rose-50 px-1 py-0.2 rounded border border-rose-100" title="Perdidos">🔴 ${user.perdidos || 0}</span>
+                </div>
                 
                 <!-- Puntos -->
                 <div class="mt-3 pt-2.5 border-t border-slate-150 w-full text-center">
                   <span class="text-lg sm:text-xl font-bold scoreboard-font text-slate-850 leading-none">${pts}</span>
                   <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wide block mt-0.5">Puntos</span>
                 </div>
+
+                <!-- Hora Apuesta Referencia -->
+                ${user.fecha_apuesta_ultimo_partido && html`
+                  <div class="mt-2 text-[8px] text-slate-400 font-semibold truncate max-w-full" title="Último pronóstico: ${user.partido_referencia_descripcion}">
+                    ⏱️ ${formatPredictionDate(user.fecha_apuesta_ultimo_partido)}
+                  </div>
+                `}
               </div>
             `;
           })}
@@ -193,40 +225,64 @@ export function LeaderboardView({ leaderboard, session }) {
 
       <!-- Lista a partir del 4to Lugar -->
       <div class="glass-panel overflow-hidden">
-        <div class="px-5 py-3 border-b border-slate-200 bg-slate-50">
+        <div class="px-5 py-3 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h3 class="font-outfit font-bold text-slate-800 text-xs tracking-wider uppercase">Posiciones desde el 4° Lugar</h3>
+          ${leaderboard[0]?.partido_referencia_descripcion && html`
+            <div class="inline-flex items-center space-x-1.5 text-[9px] sm:text-[10px] text-slate-550 font-bold bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full w-fit">
+              <span class="w-1.5 h-1.5 rounded-full ${leaderboard[0].partido_referencia_es_en_curso ? 'bg-amber-500 animate-pulse' : 'bg-slate-400'}"></span>
+              <span>Últ. Partido: <b>${leaderboard[0].partido_referencia_descripcion}</b></span>
+              <span class="text-slate-400 uppercase text-[8px]">(${leaderboard[0].partido_referencia_es_en_curso ? 'En Curso' : 'Terminado'})</span>
+            </div>
+          `}
         </div>
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="border-b border-slate-200 bg-slate-100/60 text-slate-650 text-[10px] font-bold uppercase tracking-wider">
-              <th class="py-2.5 px-5 text-center w-16">Pos</th>
-              <th class="py-2.5 px-5">Colaborador</th>
-              <th class="py-2.5 px-5 text-center">Puntos Totales</th>
+              <th class="py-2.5 px-3 sm:px-5 text-center w-12 sm:w-16">Pos</th>
+              <th class="py-2.5 px-3 sm:px-5">Colaborador</th>
+              <th class="py-2.5 px-3 sm:px-5 text-center">Estadísticas</th>
+              <th class="py-2.5 px-3 sm:px-5 text-center">Últ. Apuesta</th>
+              <th class="py-2.5 px-3 sm:px-5 text-center w-28">Puntos Totales</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-150 text-xs sm:text-sm">
             ${paginatedData.length === 0
-              ? html`<tr><td colspan="3" class="py-10 text-center text-slate-500 font-semibold">No hay más competidores registrados.</td></tr>`
+              ? html`<tr><td colspan="5" class="py-10 text-center text-slate-500 font-semibold">No hay más competidores registrados.</td></tr>`
               : paginatedData.map((user, idx) => {
                   const isMe = user.id === session.user.id;
                   const pts = getPoints(user);
                   return html`
                     <tr key=${user.id} class="hover:bg-slate-50/85 transition-colors ${isMe ? 'bg-emerald-50/80 font-bold text-[#005a36] border-l-4 border-[#005a36]' : 'text-slate-700'}">
-                      <td class="py-2.5 px-5 text-center">
+                      <td class="py-2.5 px-3 sm:px-5 text-center">
                         <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs font-bold">
                           ${startIndex + idx + 4}
                         </span>
                       </td>
-                      <td class="py-2.5 px-5 flex items-center space-x-3">
+                      <td class="py-2.5 px-3 sm:px-5 flex items-center space-x-3">
                         <${CollaboratorAvatar} 
                           userId=${user.id} 
                           nombre=${user.nombre} 
                           apellido=${user.apellido} 
-                          className="w-16 h-16 text-lg" 
+                          className="w-12 h-12 sm:w-16 sm:h-16 text-xs sm:text-lg" 
                         />
-                        <span class="truncate font-semibold">${user.nombre} ${user.apellido}</span>
+                        <span class="truncate font-semibold text-xs sm:text-sm">${user.nombre} ${user.apellido}</span>
                       </td>
-                      <td class="py-2.5 px-5 text-center font-bold font-outfit text-slate-850 text-sm sm:text-base">
+                      <td class="py-2.5 px-3 sm:px-5 text-center whitespace-nowrap">
+                        <div class="flex items-center justify-center space-x-1 sm:space-x-2 font-bold text-[10px] sm:text-xs">
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100" title="Acertados">
+                            🟢 <span class="ml-0.5 sm:ml-1">${user.acertados || 0}</span>
+                            <span class="hidden md:inline ml-1 text-[9px] uppercase font-semibold">Acertados</span>
+                          </span>
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-100" title="Perdidos">
+                            🔴 <span class="ml-0.5 sm:ml-1">${user.perdidos || 0}</span>
+                            <span class="hidden md:inline ml-1 text-[9px] uppercase font-semibold">Perdidos</span>
+                          </span>
+                        </div>
+                      </td>
+                      <td class="py-2.5 px-3 sm:px-5 text-center whitespace-nowrap font-medium font-outfit text-slate-500 text-[10px] sm:text-xs">
+                        ${user.fecha_apuesta_ultimo_partido ? formatPredictionDate(user.fecha_apuesta_ultimo_partido) : '-'}
+                      </td>
+                      <td class="py-2.5 px-3 sm:px-5 text-center font-bold font-outfit text-slate-850 text-xs sm:text-base">
                         ${pts} <span class="text-[10px] font-medium text-slate-500 lowercase">pts</span>
                       </td>
                     </tr>
