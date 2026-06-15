@@ -46,8 +46,8 @@ export function StatsView({ session, fixture = [], leaderboard = [] }) {
 
   // Cálculos Globales / Comunidad
   const sortedLeaderboard = [...leaderboard].sort((a, b) => {
-    const ptsA = typeof a.puntos_totales === 'number' ? a.puntos_totales : (a.puntos || 0);
-    const ptsB = typeof b.puntos_totales === 'number' ? b.puntos_totales : (b.puntos || 0);
+    const ptsA = Number(a.puntos_totales !== undefined && a.puntos_totales !== null ? a.puntos_totales : (a.puntos || 0));
+    const ptsB = Number(b.puntos_totales !== undefined && b.puntos_totales !== null ? b.puntos_totales : (b.puntos || 0));
     if (ptsB !== ptsA) return ptsB - ptsA;
 
     // Desempate por la hora de apuesta del último partido culminado (más antigua primero)

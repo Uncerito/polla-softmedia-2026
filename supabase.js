@@ -324,13 +324,30 @@ class SupabaseRealClient {
       }
     }
 
-    // 4. Obtener todos los partidos terminados para calcular estadísticas de aciertos/fallos
+    // 4. Obtener todos los partidos terminados oficiales para calcular estadísticas de aciertos/fallos
     const { data: finishedMatches, error: fmError } = await this.client
       .from('partidos')
       .select('id')
       .not('resultado', 'is', null);
 
-    const finishedMatchIds = finishedMatches ? finishedMatches.map(m => m.id) : [];
+    // Para evitar discrepancias en entornos de prueba si se forzaron puntos en pronósticos manualmente:
+    // Un partido se considera "terminado" si tiene resultado en la tabla partidos,
+    // o si algún usuario obtuvo puntos (> 0) en su pronóstico para el mismo.
+    let finishedMatchIdsSet = new Set(finishedMatches ? finishedMatches.map(m => m.id) : []);
+
+    // Escanear la tabla pronósticos para encontrar otros partidos que puedan tener puntos asignados
+    const { data: allActivePronosticos, error: apError } = await this.client
+      .from('pronosticos')
+      .select('partido_id, usuario_id, puntos_ganados')
+      .gt('puntos_ganados', 0);
+
+    if (!apError && allActivePronosticos) {
+      allActivePronosticos.forEach(p => {
+        finishedMatchIdsSet.add(p.partido_id);
+      });
+    }
+
+    const finishedMatchIds = Array.from(finishedMatchIdsSet);
     const totalFinished = finishedMatchIds.length;
 
     let pronosticosFinMap = {}; // mapping: usuario_id -> count of puntos_ganados > 0
@@ -361,7 +378,7 @@ class SupabaseRealClient {
     // Agregar la hora de la apuesta del último partido terminado a cada usuario, más estadísticas
     const leaderboardWithTime = data.map(u => {
       const acertados = pronosticosFinMap[u.id] || 0;
-      const perdidos = totalFinished - acertados;
+      const perdidos = Math.max(0, totalFinished - acertados);
       return {
         ...u,
         fecha_apuesta_ultimo_partido: pronosticosMap[u.id] || null,
@@ -378,8 +395,8 @@ class SupabaseRealClient {
     //    Si uno no tiene apuesta, va al final (fecha_apuesta_ultimo_partido es null)
     // 3. Si persiste el empate (o si no hay partido terminado), alfabéticamente
     leaderboardWithTime.sort((a, b) => {
-      const ptsA = typeof a.puntos_totales === 'number' ? a.puntos_totales : 0;
-      const ptsB = typeof b.puntos_totales === 'number' ? b.puntos_totales : 0;
+      const ptsA = Number(a.puntos_totales !== undefined && a.puntos_totales !== null ? a.puntos_totales : (a.puntos || 0));
+      const ptsB = Number(b.puntos_totales !== undefined && b.puntos_totales !== null ? b.puntos_totales : (b.puntos || 0));
       if (ptsB !== ptsA) {
         return ptsB - ptsA;
       }

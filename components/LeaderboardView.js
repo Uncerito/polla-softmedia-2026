@@ -99,8 +99,8 @@ export function LeaderboardView({ leaderboard, session }) {
 
   // 1. Ordenar clasificación: puntaje descendente, y en caso de empate, por hora de apuesta del último partido culminado (más antigua primero), y si persiste, alfabéticamente
   const sortedData = [...leaderboard].sort((a, b) => {
-    const ptsA = typeof a.puntos_totales === 'number' ? a.puntos_totales : (a.puntos || 0);
-    const ptsB = typeof b.puntos_totales === 'number' ? b.puntos_totales : (b.puntos || 0);
+    const ptsA = Number(a.puntos_totales !== undefined && a.puntos_totales !== null ? a.puntos_totales : (a.puntos || 0));
+    const ptsB = Number(b.puntos_totales !== undefined && b.puntos_totales !== null ? b.puntos_totales : (b.puntos || 0));
     if (ptsB !== ptsA) {
       return ptsB - ptsA;
     }
