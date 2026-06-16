@@ -203,6 +203,7 @@ export function LeaderboardView({ leaderboard, session }) {
                 <div class="flex items-center justify-center space-x-2 mt-1.5 text-[9px] font-bold">
                   <span class="text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100" title="Acertados">🟢 ${user.acertados || 0}</span>
                   <span class="text-rose-600 bg-rose-50 px-1 py-0.2 rounded border border-rose-100" title="Perdidos">🔴 ${user.perdidos || 0}</span>
+                  <span class="text-slate-600 bg-slate-50 px-1 py-0.2 rounded border border-slate-200" title="No Apostados">⚫ ${user.no_apostados || 0}</span>
                 </div>
                 
                 <!-- Puntos -->
@@ -276,6 +277,10 @@ export function LeaderboardView({ leaderboard, session }) {
                           <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-100" title="Perdidos">
                             🔴 <span class="ml-0.5 sm:ml-1">${user.perdidos || 0}</span>
                             <span class="hidden md:inline ml-1 text-[9px] uppercase font-semibold">Perdidos</span>
+                          </span>
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-50 text-slate-700 border border-slate-200" title="No Apostados">
+                            ⚫ <span class="ml-0.5 sm:ml-1">${user.no_apostados || 0}</span>
+                            <span class="hidden md:inline ml-1 text-[9px] uppercase font-semibold">No Apostados</span>
                           </span>
                         </div>
                       </td>

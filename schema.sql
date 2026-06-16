@@ -144,7 +144,13 @@ ALTER TABLE public.pronosticos ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Usuarios leen sus propios pronósticos"
     ON public.pronosticos FOR SELECT TO authenticated
-    USING (usuario_id = auth.uid());
+    USING (
+        usuario_id = auth.uid()
+        OR EXISTS (
+            SELECT 1 FROM public.partidos
+            WHERE id = partido_id AND fecha_hora <= now()
+        )
+    );
 
 CREATE POLICY "Insertar pronósticos solo antes del partido"
     ON public.pronosticos FOR INSERT TO authenticated

@@ -350,6 +350,7 @@ class SupabaseRealClient {
     const finishedMatchIds = Array.from(finishedMatchIdsSet);
     const totalFinished = finishedMatchIds.length;
 
+    let userPredictionsCountMap = {}; // mapping: usuario_id -> count of predictions made for finished matches
     let pronosticosFinMap = {}; // mapping: usuario_id -> count of puntos_ganados > 0
     if (totalFinished > 0) {
       const { data: pronosticosFin, error: pfError } = await this.client
@@ -359,6 +360,8 @@ class SupabaseRealClient {
         
       if (!pfError && pronosticosFin) {
         pronosticosFin.forEach(p => {
+          userPredictionsCountMap[p.usuario_id] = (userPredictionsCountMap[p.usuario_id] || 0) + 1;
+          
           if (!pronosticosFinMap[p.usuario_id]) {
             pronosticosFinMap[p.usuario_id] = 0;
           }
@@ -378,14 +381,17 @@ class SupabaseRealClient {
     // Agregar la hora de la apuesta del último partido terminado a cada usuario, más estadísticas
     const leaderboardWithTime = data.map(u => {
       const acertados = pronosticosFinMap[u.id] || 0;
-      const perdidos = Math.max(0, totalFinished - acertados);
+      const totalPredictions = userPredictionsCountMap[u.id] || 0;
+      const perdidos = Math.max(0, totalPredictions - acertados);
+      const no_apostados = Math.max(0, totalFinished - totalPredictions);
       return {
         ...u,
         fecha_apuesta_ultimo_partido: pronosticosMap[u.id] || null,
         partido_referencia_descripcion: partidoReferenciaDescripcion,
         partido_referencia_es_en_curso: esEnCurso,
         acertados,
-        perdidos
+        perdidos,
+        no_apostados
       };
     });
 
