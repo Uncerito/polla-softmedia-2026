@@ -6,7 +6,7 @@ import { db } from './supabase.js';
 
 import { LoginView } from './components/LoginView.js?v=1.1.0';
 import { DashboardView } from './components/DashboardView.js?v=1.2.1';
-import { LeaderboardView } from './components/LeaderboardView.js?v=1.1.1';
+import { LeaderboardView } from './components/LeaderboardView.js?v=1.1.0';
 import { AdminView } from './components/AdminView.js?v=1.1.0';
 import { GroupStandingsView } from './components/GroupStandingsView.js?v=1.1.0';
 import { StatsView } from './components/StatsView.js?v=1.1.0';

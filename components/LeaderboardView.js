@@ -24,84 +24,6 @@ function formatPredictionDate(dateStr) {
   return `${d} ${t}`;
 }
 
-const CONFETTI_PARTICLES = [
-  { left: '8%', size: '8px', delay: '0.2s', duration: '5.5s', type: 1 },
-  { left: '22%', size: '12px', delay: '1.5s', duration: '6.8s', type: 2 },
-  { left: '38%', size: '6px', delay: '3.1s', duration: '4.9s', type: 3 },
-  { left: '52%', size: '10px', delay: '0.8s', duration: '7.2s', type: 1 },
-  { left: '68%', size: '8px', delay: '2.3s', duration: '6.0s', type: 2 },
-  { left: '84%', size: '12px', delay: '4.0s', duration: '8.0s', type: 3 },
-  { left: '15%', size: '10px', delay: '2.7s', duration: '6.2s', type: 3 },
-  { left: '45%', size: '8px', delay: '1.9s', duration: '5.8s', type: 2 },
-  { left: '75%', size: '14px', delay: '0.5s', duration: '7.5s', type: 1 },
-  { left: '92%', size: '6px', delay: '3.5s', duration: '5.0s', type: 2 },
-  { left: '30%', size: '9px', delay: '4.5s', duration: '6.5s', type: 1 },
-  { left: '60%', size: '11px', delay: '1.1s', duration: '7.0s', type: 3 }
-];
-
-function GoldConfetti() {
-  return html`
-    <div class="podium-confetti-container">
-      ${CONFETTI_PARTICLES.map((p, idx) => html`
-        <div 
-          key=${idx} 
-          class="podium-confetti-particle particle-gold-${p.type}" 
-          style=${{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            bottom: '-20px'
-          }}
-        />
-      `)}
-    </div>
-  `;
-}
-
-function SilverConfetti() {
-  return html`
-    <div class="podium-confetti-container">
-      ${CONFETTI_PARTICLES.map((p, idx) => html`
-        <div 
-          key=${idx} 
-          class="podium-confetti-particle particle-silver-${p.type}" 
-          style=${{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            top: '-20px'
-          }}
-        />
-      `)}
-    </div>
-  `;
-}
-
-function BronzeConfetti() {
-  return html`
-    <div class="podium-confetti-container">
-      ${CONFETTI_PARTICLES.map((p, idx) => html`
-        <div 
-          key=${idx} 
-          class="podium-confetti-particle particle-bronze-${p.type}" 
-          style=${{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            bottom: '20%'
-          }}
-        />
-      `)}
-    </div>
-  `;
-}
-
 function CollaboratorAvatar({ userId, nombre, apellido, className }) {
   const getCollaboratorFilename = (nom, ape) => {
     if (!nom) return '';
@@ -247,66 +169,58 @@ export function LeaderboardView({ leaderboard, session }) {
 
       <!-- Podio / Tarjetas de 1er, 2do y 3er Lugar con Copas -->
       ${podium.length > 0 && html`
-        <div class="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-2xl mx-auto items-end pt-          ${podium.map((user) => {
+        <div class="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-2xl mx-auto items-end pt-7 pb-2">
+          ${podium.map((user) => {
             const isMe = user.id === session.user.id;
             const pts = getPoints(user);
-            const podiumCardClass = user.lugar === 1
-              ? 'podium-card podium-card-1 scale-105 md:scale-110 z-10 ring-2 ring-amber-400/30'
-              : `podium-card podium-card-${user.lugar} ${isMe ? 'ring-2 ring-emerald-500' : ''}`;
+            const userCardClass = user.lugar === 1 
+              ? 'bg-gradient-to-br from-amber-50 to-amber-100/40 border-amber-300 scale-105 md:scale-110 z-10 ring-2 ring-amber-300/40' 
+              : 'bg-white border-slate-200';
 
             return html`
-              <div key=${user.id} class="glass-panel p-3.5 sm:p-5 flex flex-col items-center text-center relative ${podiumCardClass}">
+              <div key=${user.id} class="glass-panel p-3.5 sm:p-5 flex flex-col items-center text-center relative ${userCardClass} ${isMe && user.lugar !== 1 ? 'ring-2 ring-emerald-500 bg-emerald-50/20' : ''}">
                 
-                <!-- Confetti Effect -->
-                ${user.lugar === 1 && html`<${GoldConfetti} />`}
-                ${user.lugar === 2 && html`<${SilverConfetti} />`}
-                ${user.lugar === 3 && html`<${BronzeConfetti} />`}
-
                 <!-- Copa indicador de Lugar -->
-                <div class="absolute -top-6 w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center ${user.colorClass} z-20">
+                <div class="absolute -top-6 w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center ${user.colorClass}">
                   <${Trophy} size=${18} />
                 </div>
                 
-                <!-- Card Content wrapped in relative z-10 for layering -->
-                <div class="relative z-10 flex flex-col items-center w-full h-full">
-                  <span class="text-[8px] font-bold uppercase tracking-wider text-slate-500 mt-4">${user.lugar}° Puesto</span>
-                  
-                  <!-- Avatar -->
-                  <${CollaboratorAvatar} 
-                    userId=${user.id} 
-                    nombre=${user.nombre} 
-                    apellido=${user.apellido} 
-                    className="w-20 h-20 sm:w-24 sm:h-24 text-2xl sm:text-3xl my-2.5" 
-                  />
-                  
-                  <!-- Nombre -->
-                  <span class="text-xs sm:text-sm font-bold text-slate-800 truncate max-w-full leading-tight">
-                    ${user.nombre}
-                  </span>
+                <span class="text-[8px] font-bold uppercase tracking-wider text-slate-500 mt-4">${user.lugar}° Puesto</span>
+                
+                <!-- Avatar -->
+                <${CollaboratorAvatar} 
+                  userId=${user.id} 
+                  nombre=${user.nombre} 
+                  apellido=${user.apellido} 
+                  className="w-20 h-20 sm:w-24 sm:h-24 text-2xl sm:text-3xl my-2.5" 
+                />
+                
+                <!-- Nombre -->
+                <span class="text-xs sm:text-sm font-bold text-slate-800 truncate max-w-full leading-tight">
+                  ${user.nombre}
+                </span>
 
-                  <!-- Estadísticas de Aciertos/Fallos en Podio -->
-                  <div class="flex items-center justify-center space-x-2 mt-1.5 text-[9px] font-bold">
-                    <span class="text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100" title="Acertados">🟢 ${user.acertados || 0}</span>
-                    <span class="text-rose-600 bg-rose-50 px-1 py-0.2 rounded border border-rose-100" title="Perdidos">🔴 ${user.perdidos || 0}</span>
-                    <span class="text-slate-600 bg-slate-50 px-1 py-0.2 rounded border border-slate-200" title="No Apostados">⚫ ${user.no_apostados || 0}</span>
-                  </div>
-                  
-                  <!-- Puntos -->
-                  <div class="mt-3 pt-2.5 border-t border-slate-150 w-full text-center">
-                    <span class="text-lg sm:text-xl font-bold scoreboard-font text-slate-850 leading-none">${pts}</span>
-                    <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wide block mt-0.5">Puntos</span>
-                  </div>
-
-                  <!-- Hora Apuesta Referencia -->
-                  ${user.fecha_apuesta_ultimo_partido && html`
-                    <div class="mt-2 text-[8px] text-slate-400 font-semibold truncate max-w-full" title="Último pronóstico: ${user.partido_referencia_descripcion}">
-                      ⏱️ ${formatPredictionDate(user.fecha_apuesta_ultimo_partido)}
-                    </div>
-                  `}
+                <!-- Estadísticas de Aciertos/Fallos en Podio -->
+                <div class="flex items-center justify-center space-x-2 mt-1.5 text-[9px] font-bold">
+                  <span class="text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-100" title="Acertados">🟢 ${user.acertados || 0}</span>
+                  <span class="text-rose-600 bg-rose-50 px-1 py-0.2 rounded border border-rose-100" title="Perdidos">🔴 ${user.perdidos || 0}</span>
+                  <span class="text-slate-600 bg-slate-50 px-1 py-0.2 rounded border border-slate-200" title="No Apostados">⚫ ${user.no_apostados || 0}</span>
                 </div>
+                
+                <!-- Puntos -->
+                <div class="mt-3 pt-2.5 border-t border-slate-150 w-full text-center">
+                  <span class="text-lg sm:text-xl font-bold scoreboard-font text-slate-850 leading-none">${pts}</span>
+                  <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wide block mt-0.5">Puntos</span>
+                </div>
+
+                <!-- Hora Apuesta Referencia -->
+                ${user.fecha_apuesta_ultimo_partido && html`
+                  <div class="mt-2 text-[8px] text-slate-400 font-semibold truncate max-w-full" title="Último pronóstico: ${user.partido_referencia_descripcion}">
+                    ⏱️ ${formatPredictionDate(user.fecha_apuesta_ultimo_partido)}
+                  </div>
+                `}
               </div>
             `;
-          })}         `;
           })}
         </div>
       `}
