@@ -43,7 +43,8 @@ function CollaboratorAvatar({ userId, nombre, apellido, className }) {
       'martingonzales': 'martringonzales',
       'paulmalqui': 'paulmallqui',
       'kojiropacha': 'kojiropachas',
-      'melisaizquierdo': 'melizamensoza',
+      'melizamendoza': 'melizamensoza',
+      'melisamendoza': 'melizamensoza',
     };
 
     return exceptions[combined] || combined;

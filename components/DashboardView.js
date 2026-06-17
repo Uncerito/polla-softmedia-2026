@@ -37,7 +37,12 @@ export function DashboardView({
     matchesToShow = fixture.filter(p => Number(p.jornada) === Number(selectedJornada));
   }
 
-  const sortedMatches = [...matchesToShow].sort((a, b) => new Date(a.fecha_hora) - new Date(b.fecha_hora));
+  const sortedMatches = [...matchesToShow].sort((a, b) => {
+    if (dashboardTab === 'pasados') {
+      return new Date(b.fecha_hora) - new Date(a.fecha_hora);
+    }
+    return new Date(a.fecha_hora) - new Date(b.fecha_hora);
+  });
 
   const matchesByDay = {};
   const dayKeysInOrder = [];
