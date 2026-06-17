@@ -350,7 +350,7 @@ body:not(.theme-light) .main-app-container [class*="border-\[#2d3535\]"] {
 /* Recuadro de los goles estilo verde menta / turquesa */
 .wc-score-box {
   background-color: #8efad4 !important;
-  color: #0b0e14 !important;
+  color: #000000 !important;
   font-family: 'Outfit', sans-serif !important;
   font-weight: 900 !important;
   width: 44px;
@@ -370,7 +370,7 @@ body:not(.theme-light) .main-app-container [class*="border-\[#2d3535\]"] {
   background: transparent !important;
   border: none !important;
   outline: none !important;
-  color: #0b0e14 !important;
+  color: #000000 !important;
   font-family: 'Outfit', sans-serif !important;
   font-weight: 900 !important;
   font-size: 1.25rem !important;
@@ -828,9 +828,27 @@ body.theme-light .wc-match-card-inner .text-slate-450 {
 }
 
 body.theme-light .wc-match-card-inner .wc-score-box,
-body.theme-light .wc-match-card-inner .wc-score-input {
-  color: #0b0e14 !important;
+body.theme-light .wc-match-card-inner .wc-score-box *,
+body.theme-light .wc-match-card-inner .wc-score-input,
+body:not(.theme-light) .wc-match-card-inner .wc-score-box,
+body:not(.theme-light) .wc-match-card-inner .wc-score-box *,
+body:not(.theme-light) .wc-match-card-inner .wc-score-input {
+  color: #000000 !important;
   background-color: #8efad4 !important;
+}
+
+body.theme-light .wc-match-card-inner .wc-score-input,
+body:not(.theme-light) .wc-match-card-inner .wc-score-input {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+body.theme-light .wc-match-card-inner .wc-score-input::placeholder,
+body:not(.theme-light) .wc-match-card-inner .wc-score-input::placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
 }
 
 body.theme-light .wc-match-card-inner .wc-card-footer-banner {
