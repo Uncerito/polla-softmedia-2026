@@ -324,6 +324,35 @@ class SupabaseRealClient {
       }
     }
 
+    // 3.5. Obtener el último partido que ya se jugó (que tiene resultado)
+    const { data: ultimoJugado, error: ujError } = await this.client
+      .from('partidos')
+      .select('id, numero_partido, fecha_hora, equipo_a, equipo_b, goles_a, goles_b, resultado')
+      .not('resultado', 'is', null)
+      .order('fecha_hora', { ascending: false })
+      .order('numero_partido', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let pronosticosUltimoMap = {};
+    if (!ujError && ultimoJugado) {
+      const { data: pronosUltimo, error: puError } = await this.client
+        .from('pronosticos')
+        .select('usuario_id, prediccion, goles_a, goles_b, puntos_ganados')
+        .eq('partido_id', ultimoJugado.id);
+      
+      if (!puError && pronosUltimo) {
+        pronosUltimo.forEach(p => {
+          pronosticosUltimoMap[p.usuario_id] = {
+            prediccion: p.prediccion,
+            goles_a: p.goles_a,
+            goles_b: p.goles_b,
+            puntos_ganados: p.puntos_ganados
+          };
+        });
+      }
+    }
+
     // 4. Obtener todos los partidos terminados oficiales para calcular estadísticas de aciertos/fallos
     const { data: finishedMatches, error: fmError } = await this.client
       .from('partidos')
@@ -378,12 +407,14 @@ class SupabaseRealClient {
 
     if (error) throw error;
 
-    // Agregar la hora de la apuesta del último partido terminado a cada usuario, más estadísticas
+    // Agregar la hora de la apuesta del último partido terminado a cada usuario, más estadísticas y datos del último pronóstico
     const leaderboardWithTime = data.map(u => {
       const acertados = pronosticosFinMap[u.id] || 0;
       const totalPredictions = userPredictionsCountMap[u.id] || 0;
       const perdidos = Math.max(0, totalPredictions - acertados);
       const no_apostados = Math.max(0, totalFinished - totalPredictions);
+      const ultimoPronostico = pronosticosUltimoMap[u.id] || null;
+
       return {
         ...u,
         fecha_apuesta_ultimo_partido: pronosticosMap[u.id] || null,
@@ -391,7 +422,17 @@ class SupabaseRealClient {
         partido_referencia_es_en_curso: esEnCurso,
         acertados,
         perdidos,
-        no_apostados
+        no_apostados,
+        ultimo_partido_jugado: ultimoJugado ? {
+          id: ultimoJugado.id,
+          numero_partido: ultimoJugado.numero_partido,
+          equipo_a: ultimoJugado.equipo_a,
+          equipo_b: ultimoJugado.equipo_b,
+          goles_a: ultimoJugado.goles_a,
+          goles_b: ultimoJugado.goles_b,
+          resultado: ultimoJugado.resultado
+        } : null,
+        ultimo_pronostico: ultimoPronostico
       };
     });
 

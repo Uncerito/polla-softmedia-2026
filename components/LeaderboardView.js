@@ -141,7 +141,9 @@ export function LeaderboardView({ leaderboard, session }) {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = listData.slice(startIndex, startIndex + itemsPerPage);
 
-  const getPoints = (user) => typeof user.puntos_totales === 'number' ? user.puntos_totales : (user.puntos || 0);  return html`
+  const getPoints = (user) => typeof user.puntos_totales === 'number' ? user.puntos_totales : (user.puntos || 0);
+  const ultimoPartido = leaderboard[0]?.ultimo_partido_jugado;
+  return html`
     <div class="space-y-5">
       <!-- Banner Cabecera Mundialista (Con Trofeo de Copa del Mundo) -->
       <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#005a36] via-[#008f5c] to-[#04140c] p-4 md:p-5 text-white shadow-sm flex items-center justify-between">
@@ -213,10 +215,30 @@ export function LeaderboardView({ leaderboard, session }) {
                   <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wide block mt-0.5">Puntos</span>
                 </div>
 
-                <!-- Hora Apuesta Referencia -->
-                ${user.fecha_apuesta_ultimo_partido && html`
-                  <div class="mt-2 text-[8px] text-slate-400 font-semibold truncate max-w-full" title="Último pronóstico: ${user.partido_referencia_descripcion}">
-                    ⏱️ ${formatPredictionDate(user.fecha_apuesta_ultimo_partido)}
+                <!-- Pronóstico del Último Partido Jugado -->
+                ${ultimoPartido && html`
+                  <div class="mt-2.5 pt-2.5 border-t border-slate-150 w-full flex flex-col items-center">
+                    <span class="text-[8px] font-bold text-slate-500 uppercase tracking-wider">Últ. Pronóstico</span>
+                    <span class="text-[9px] font-bold text-[#008f5c] truncate max-w-full leading-tight mt-0.5" title="${ultimoPartido.equipo_a} vs ${ultimoPartido.equipo_b}">
+                      ${ultimoPartido.equipo_a} vs ${ultimoPartido.equipo_b}
+                    </span>
+                    <div class="flex items-center justify-center space-x-1.5 mt-1">
+                      ${user.ultimo_pronostico
+                        ? html`
+                            <span class="text-xs font-black text-slate-800">${user.ultimo_pronostico.goles_a} - ${user.ultimo_pronostico.goles_b}</span>
+                            <span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-black uppercase tracking-wider ${
+                              user.ultimo_pronostico.puntos_ganados === 2
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                : user.ultimo_pronostico.puntos_ganados === 1
+                                  ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                  : 'bg-rose-50 text-rose-700 border border-rose-100'
+                            }">
+                              ${user.ultimo_pronostico.puntos_ganados === 2 ? '+2' : user.ultimo_pronostico.puntos_ganados === 1 ? '+1' : '0'} Pts
+                            </span>
+                          `
+                        : html`<span class="text-[9px] text-slate-450 italic">No apostó</span>`
+                      }
+                    </div>
                   </div>
                 `}
               </div>
@@ -243,7 +265,14 @@ export function LeaderboardView({ leaderboard, session }) {
               <th class="py-2.5 px-3 sm:px-5 text-center w-12 sm:w-16">Pos</th>
               <th class="py-2.5 px-3 sm:px-5">Colaborador</th>
               <th class="py-2.5 px-3 sm:px-5 text-center">Estadísticas</th>
-              <th class="py-2.5 px-3 sm:px-5 text-center">Últ. Apuesta</th>
+              <th class="py-2.5 px-3 sm:px-5 text-center min-w-[125px]" title="Pronóstico del último partido oficial jugado">
+                Últ. Pronóstico
+                ${ultimoPartido && html`
+                  <span class="block text-[8.5px] text-slate-500 normal-case font-bold tracking-normal mt-0.5">
+                    ${ultimoPartido.equipo_a} vs ${ultimoPartido.equipo_b}
+                  </span>
+                `}
+              </th>
               <th class="py-2.5 px-3 sm:px-5 text-center w-28">Puntos Totales</th>
             </tr>
           </thead>
@@ -285,8 +314,24 @@ export function LeaderboardView({ leaderboard, session }) {
                           </span>
                         </div>
                       </td>
-                      <td class="py-2.5 px-3 sm:px-5 text-center whitespace-nowrap font-medium font-outfit text-slate-500 text-[10px] sm:text-xs">
-                        ${user.fecha_apuesta_ultimo_partido ? formatPredictionDate(user.fecha_apuesta_ultimo_partido) : '-'}
+                      <td class="py-2.5 px-3 sm:px-5 text-center whitespace-nowrap">
+                        ${user.ultimo_pronostico
+                          ? html`
+                              <div class="flex flex-col items-center justify-center">
+                                <span class="font-bold text-slate-800">${user.ultimo_pronostico.goles_a} - ${user.ultimo_pronostico.goles_b}</span>
+                                <span class="inline-flex items-center px-1.5 py-0.2 mt-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+                                  user.ultimo_pronostico.puntos_ganados === 2
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                    : user.ultimo_pronostico.puntos_ganados === 1
+                                      ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                      : 'bg-rose-50 text-rose-700 border border-rose-100'
+                                }">
+                                  ${user.ultimo_pronostico.puntos_ganados === 2 ? '+2 Pts' : user.ultimo_pronostico.puntos_ganados === 1 ? '+1 Pt' : '0 Pts'}
+                                </span>
+                              </div>
+                            `
+                          : html`<span class="text-slate-400 italic text-xs">No apostó</span>`
+                        }
                       </td>
                       <td class="py-2.5 px-3 sm:px-5 text-center font-bold font-outfit text-slate-850 text-xs sm:text-base">
                         ${pts} <span class="text-[10px] font-medium text-slate-500 lowercase">pts</span>
