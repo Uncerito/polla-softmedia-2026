@@ -254,12 +254,47 @@ export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating
 
 export function AdminView({ adminUsers, fixture, onRefresh, addToast }) {
   const [adminTab, setAdminTab] = useState('resultados');
+  const [subTab, setSubTab] = useState('hoy');
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
   const [email, setEmail] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [creatingUser, setCreatingUser] = useState(false);
   const [updatingMatch, setUpdatingMatch] = useState(null);
+
+  // Clasificación de partidos por fecha en hora de Lima
+  const now = new Date();
+  const todayStr = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Lima' });
+
+  const matchesToday = [];
+  const matchesUpcoming = [];
+  const matchesPast = [];
+
+  fixture.forEach(partido => {
+    const matchLoc = new Date(partido.fecha_hora).toLocaleDateString('sv-SE', { timeZone: 'America/Lima' });
+    if (matchLoc === todayStr) {
+      matchesToday.push(partido);
+    } else if (partido.resultado !== null || new Date(partido.fecha_hora) < now) {
+      matchesPast.push(partido);
+    } else {
+      matchesUpcoming.push(partido);
+    }
+  });
+
+  // Ajuste inteligente para redirigir a la pestaña con contenido si la de hoy está vacía
+  useEffect(() => {
+    if (fixture.length > 0) {
+      const hasToday = fixture.some(p => new Date(p.fecha_hora).toLocaleDateString('sv-SE', { timeZone: 'America/Lima' }) === todayStr);
+      if (!hasToday) {
+        const hasUpcoming = fixture.some(p => p.resultado === null && new Date(p.fecha_hora) >= now);
+        if (hasUpcoming) {
+          setSubTab('proximos');
+        } else {
+          setSubTab('pasados');
+        }
+      }
+    }
+  }, [fixture]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -337,16 +372,106 @@ export function AdminView({ adminUsers, fixture, onRefresh, addToast }) {
 
         <div class="lg:col-span-3 space-y-4">
           ${adminTab === 'resultados' && html`
-            <div class="space-y-3.5">
-              ${fixture.map(partido => html`
-                <${AdminMatchRow} 
-                  key=${partido.id} 
-                  partido=${partido} 
-                  onUpdateGoals=${handleUpdateGoals} 
-                  onUpdateInfo=${handleUpdateInfo}
-                  isUpdating=${updatingMatch === partido.id} 
-                />
-              `)}
+            <div class="space-y-4">
+              <!-- Sub-navegación por Fecha de Partido -->
+              <div class="flex items-center space-x-2.5 pb-2.5 border-b border-slate-200 overflow-x-auto">
+                <button 
+                  onClick=${() => setSubTab('hoy')} 
+                  class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
+                    subTab === 'hoy'
+                      ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                  }"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full ${matchesToday.length > 0 ? 'bg-amber-400 animate-pulse' : 'bg-slate-400'}"></span>
+                  <span>De Hoy (${matchesToday.length})</span>
+                </button>
+                
+                <button 
+                  onClick=${() => setSubTab('proximos')} 
+                  class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
+                    subTab === 'proximos'
+                      ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                  }"
+                >
+                  <span>Próximos (${matchesUpcoming.length})</span>
+                </button>
+                
+                <button 
+                  onClick=${() => setSubTab('pasados')} 
+                  class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
+                    subTab === 'pasados'
+                      ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                  }"
+                >
+                  <span>Pasados (${matchesPast.length})</span>
+                </button>
+              </div>
+
+              <!-- Listados de Partidos -->
+              <div class="space-y-3.5">
+                ${subTab === 'hoy' && html`
+                  ${matchesToday.length === 0 
+                    ? html`
+                        <div class="glass-panel p-10 text-center text-slate-500">
+                          <p class="font-outfit font-bold text-xs uppercase text-slate-700">No hay partidos programados para hoy</p>
+                          <p class="text-[9px] font-semibold text-slate-450 mt-1">Usa las otras pestañas para ver partidos próximos o pasados.</p>
+                        </div>
+                      `
+                    : matchesToday.map(partido => html`
+                        <${AdminMatchRow} 
+                          key=${partido.id} 
+                          partido=${partido} 
+                          onUpdateGoals=${handleUpdateGoals} 
+                          onUpdateInfo=${handleUpdateInfo}
+                          isUpdating=${updatingMatch === partido.id} 
+                        />
+                      `)
+                  }
+                `}
+
+                ${subTab === 'proximos' && html`
+                  ${matchesUpcoming.length === 0 
+                    ? html`
+                        <div class="glass-panel p-10 text-center text-slate-500">
+                          <p class="font-outfit font-bold text-xs uppercase text-slate-700">No hay partidos próximos</p>
+                          <p class="text-[9px] font-semibold text-slate-450 mt-1">Todos los partidos del fixture han comenzado o terminado.</p>
+                        </div>
+                      `
+                    : matchesUpcoming.map(partido => html`
+                        <${AdminMatchRow} 
+                          key=${partido.id} 
+                          partido=${partido} 
+                          onUpdateGoals=${handleUpdateGoals} 
+                          onUpdateInfo=${handleUpdateInfo}
+                          isUpdating=${updatingMatch === partido.id} 
+                        />
+                      `)
+                  }
+                `}
+
+                ${subTab === 'pasados' && html`
+                  ${matchesPast.length === 0 
+                    ? html`
+                        <div class="glass-panel p-10 text-center text-slate-500">
+                          <p class="font-outfit font-bold text-xs uppercase text-slate-700">No hay partidos pasados</p>
+                          <p class="text-[9px] font-semibold text-slate-450 mt-1">Los partidos que ya iniciaron o culminaron aparecerán aquí.</p>
+                        </div>
+                      `
+                    : matchesPast.map(partido => html`
+                        <${AdminMatchRow} 
+                          key=${partido.id} 
+                          partido=${partido} 
+                          onUpdateGoals=${handleUpdateGoals} 
+                          onUpdateInfo=${handleUpdateInfo}
+                          isUpdating=${updatingMatch === partido.id} 
+                        />
+                      `)
+                  }
+                `}
+              </div>
             </div>
           `}
 
