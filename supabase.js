@@ -610,8 +610,8 @@ class SupabaseRealClient {
       { numero_partido: 78, fase: '16avos', equipo_a: 'Costa de Marfil', equipo_b: 'Noruega', fecha_hora: '2026-06-30T12:00:00-05:00', sede: 'Estadio Dallas', ciudad: 'Dallas, US 🇺🇸' },
       { numero_partido: 79, fase: '16avos', equipo_a: 'México', equipo_b: 'Ecuador', fecha_hora: '2026-06-30T20:00:00-05:00', sede: 'Estadio Ciudad de México', ciudad: 'Ciudad de México, MX 🇲🇽' },
       { numero_partido: 80, fase: '16avos', equipo_a: 'Inglaterra', equipo_b: 'RD Congo', fecha_hora: '2026-07-01T11:00:00-05:00', sede: 'Estadio Atlanta', ciudad: 'Atlanta, US 🇺🇸' },
-      { numero_partido: 81, fase: '16avos', equipo_a: 'Bélgica', equipo_b: 'Senegal', fecha_hora: '2026-07-01T15:00:00-05:00', sede: 'Estadio Seattle', ciudad: 'Seattle, US 🇺🇸' },
-      { numero_partido: 82, fase: '16avos', equipo_a: 'EE. UU.', equipo_b: 'Bosnia y Herzegovina', fecha_hora: '2026-07-01T19:00:00-05:00', sede: 'Estadio de la Bahía de San Francisco', ciudad: 'Área de la Bahía de San Francisco, US 🇺🇸' },
+      { numero_partido: 81, fase: '16avos', equipo_a: 'EE. UU.', equipo_b: 'Bosnia y Herzegovina', fecha_hora: '2026-07-01T19:00:00-05:00', sede: 'Estadio de la Bahía de San Francisco', ciudad: 'Área de la Bahía de San Francisco, US 🇺🇸' },
+      { numero_partido: 82, fase: '16avos', equipo_a: 'Bélgica', equipo_b: 'Senegal', fecha_hora: '2026-07-01T15:00:00-05:00', sede: 'Estadio Seattle', ciudad: 'Seattle, US 🇺🇸' },
       { numero_partido: 83, fase: '16avos', equipo_a: 'España', equipo_b: 'Austria', fecha_hora: '2026-07-02T14:00:00-05:00', sede: 'Estadio Los Angeles', ciudad: 'Los Ángeles, US 🇺🇸' },
       { numero_partido: 84, fase: '16avos', equipo_a: 'Portugal', equipo_b: 'Croacia', fecha_hora: '2026-07-02T18:00:00-05:00', sede: 'Estadio de Toronto', ciudad: 'Toronto, CA 🇨🇦' },
       { numero_partido: 85, fase: '16avos', equipo_a: 'Suiza', equipo_b: 'Argelia', fecha_hora: '2026-07-02T22:00:00-05:00', sede: 'Estadio BC Place Vancouver', ciudad: 'Vancouver, CA 🇨🇦' },
@@ -674,138 +674,8 @@ class SupabaseRealClient {
 
     if (allErr) throw allErr;
 
-    // 2. Calcular tablas de posiciones locales
-    const groupMatches = allMatches.filter(m => m.numero_partido <= 72);
-    const standings = this.calculateLocalStandings(groupMatches);
-
-    // Helper para validar si un grupo está completamente terminado
-    const isGroupComplete = (groupStandings) => {
-      const totalPj = groupStandings.reduce((sum, t) => sum + t.pj, 0);
-      return totalPj === 12; // 6 partidos por grupo * 2 equipos = 12 partidos jugados en total
-    };
-
+    // 2. Definir contenedor para actualizaciones calculadas (solo a partir de Octavos)
     const updates = {}; // mapeo: numero_partido -> { equipo_a, equipo_b }
-
-    // 3. Emparejar clasificados directos (1º y 2º) de grupos completados
-    const groupsList = ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo E', 'Grupo F', 'Grupo G', 'Grupo H', 'Grupo I', 'Grupo J', 'Grupo K', 'Grupo L'];
-    
-    // Mapeo de partidos 73-88 a sus reglas de 1º y 2º
-    const groupWinnersMapping = {
-      73: [
-        { group: 'Grupo A', pos: 2, field: 'equipo_a' },
-        { group: 'Grupo B', pos: 2, field: 'equipo_b' }
-      ],
-      74: { group: 'Grupo E', pos: 1, field: 'equipo_a' },
-      75: [
-        { group: 'Grupo F', pos: 1, field: 'equipo_a' },
-        { group: 'Grupo C', pos: 2, field: 'equipo_b' }
-      ],
-      76: [
-        { group: 'Grupo C', pos: 1, field: 'equipo_a' },
-        { group: 'Grupo F', pos: 2, field: 'equipo_b' }
-      ],
-      77: { group: 'Grupo I', pos: 1, field: 'equipo_a' },
-      78: [
-        { group: 'Grupo E', pos: 2, field: 'equipo_a' },
-        { group: 'Grupo I', pos: 2, field: 'equipo_b' }
-      ],
-      79: { group: 'Grupo A', pos: 1, field: 'equipo_a' },
-      80: { group: 'Grupo L', pos: 1, field: 'equipo_a' },
-      81: { group: 'Grupo D', pos: 1, field: 'equipo_a' },
-      82: { group: 'Grupo G', pos: 1, field: 'equipo_a' },
-      83: [
-        { group: 'Grupo K', pos: 2, field: 'equipo_a' },
-        { group: 'Grupo L', pos: 2, field: 'equipo_b' }
-      ],
-      84: [
-        { group: 'Grupo H', pos: 1, field: 'equipo_a' },
-        { group: 'Grupo J', pos: 2, field: 'equipo_b' }
-      ],
-      85: { group: 'Grupo B', pos: 1, field: 'equipo_a' },
-      86: [
-        { group: 'Grupo J', pos: 1, field: 'equipo_a' },
-        { group: 'Grupo H', pos: 2, field: 'equipo_b' }
-      ],
-      87: { group: 'Grupo K', pos: 1, field: 'equipo_a' },
-      88: [
-        { group: 'Grupo D', pos: 2, field: 'equipo_a' },
-        { group: 'Grupo G', pos: 2, field: 'equipo_b' }
-      ]
-    };
-
-    Object.keys(groupWinnersMapping).forEach(matchNum => {
-      const num = Number(matchNum);
-      const rule = groupWinnersMapping[num];
-      
-      const applyRule = (r) => {
-        const groupSt = standings[r.group];
-        if (groupSt && isGroupComplete(groupSt)) {
-          const team = groupSt[r.pos - 1].equipo;
-          updates[num] = { ...updates[num], [r.field]: team };
-        }
-      };
-
-      if (Array.isArray(rule)) {
-        rule.forEach(applyRule);
-      } else {
-        applyRule(rule);
-      }
-    });
-
-    // 4. Si TODOS los grupos están terminados, calcular los 8 mejores terceros y distribuirlos
-    const allCompleted = groupsList.every(g => standings[g] && isGroupComplete(standings[g]));
-    if (allCompleted) {
-      const thirdPlaces = groupsList.map(g => ({
-        group: g,
-        ...standings[g][2]
-      }));
-      
-      // Ordenar terceros según criterios FIFA
-      thirdPlaces.sort((a, b) => {
-        if (b.pts !== a.pts) return b.pts - a.pts;
-        if (b.dg !== a.dg) return b.dg - a.dg;
-        if (b.gf !== a.gf) return b.gf - a.gf;
-        return a.equipo.localeCompare(b.equipo);
-      });
-
-      const best8Thirds = thirdPlaces.slice(0, 8);
-
-      const slots = [
-        { num: 74, allowed: ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo F'], winner: 'Grupo E' },
-        { num: 77, allowed: ['Grupo C', 'Grupo D', 'Grupo F', 'Grupo G', 'Grupo H'], winner: 'Grupo I' },
-        { num: 79, allowed: ['Grupo C', 'Grupo E', 'Grupo F', 'Grupo H', 'Grupo I'], winner: 'Grupo A' },
-        { num: 80, allowed: ['Grupo E', 'Grupo H', 'Grupo I', 'Grupo J', 'Grupo K'], winner: 'Grupo L' },
-        { num: 81, allowed: ['Grupo B', 'Grupo E', 'Grupo F', 'Grupo I', 'Grupo J'], winner: 'Grupo D' },
-        { num: 82, allowed: ['Grupo A', 'Grupo E', 'Grupo H', 'Grupo I', 'Grupo J'], winner: 'Grupo G' },
-        { num: 85, allowed: ['Grupo E', 'Grupo F', 'Grupo G', 'Grupo I', 'Grupo J'], winner: 'Grupo B' },
-        { num: 87, allowed: ['Grupo D', 'Grupo E', 'Grupo I', 'Grupo J', 'Grupo L'], winner: 'Grupo K' }
-      ];
-
-      // Algoritmo de backtracking para asignación balanceada de terceros clasificados
-      const assignThirds = (teams, currentSlots, assignment = {}) => {
-        if (teams.length === 0) return assignment;
-        const team = teams[0];
-        const restTeams = teams.slice(1);
-
-        for (let i = 0; i < currentSlots.length; i++) {
-          const slot = currentSlots[i];
-          if (slot.allowed.includes(team.group) && slot.winner !== team.group) {
-            const nextSlots = currentSlots.filter(s => s.num !== slot.num);
-            const result = assignThirds(restTeams, nextSlots, { ...assignment, [slot.num]: team.equipo });
-            if (result) return result;
-          }
-        }
-        return null;
-      };
-
-      const thirdAssignments = assignThirds(best8Thirds, slots);
-      if (thirdAssignments) {
-        Object.keys(thirdAssignments).forEach(matchNum => {
-          const num = Number(matchNum);
-          updates[num] = { ...updates[num], equipo_b: thirdAssignments[num] };
-        });
-      }
-    }
 
     // 5. Progresar ganadores para llaves eliminatorias de Octavos en adelante
     const getMatchWinner = (matchNum, currentMatches) => {
