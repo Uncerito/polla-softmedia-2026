@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import * as Lucide from 'lucide-react';
+import { getFlagUrl } from './utils.js';
 
 const html = htm.bind(React.createElement);
 const { Trophy, ChevronLeft, ChevronRight } = Lucide;
@@ -212,32 +213,46 @@ export function LeaderboardView({ leaderboard, session }) {
                 <!-- Puntos -->
                 <div class="mt-3 pt-2.5 border-t border-slate-150 w-full text-center">
                   <span class="text-lg sm:text-xl font-bold scoreboard-font text-slate-850 leading-none">${pts}</span>
-                  <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wide block mt-0.5">Puntos</span>
+                  <span class="text-[9px] font-bold text-slate-550 uppercase tracking-wide block mt-0.5">Puntos</span>
                 </div>
 
-                <!-- Pronóstico del Último Partido Jugado -->
-                ${ultimoPartido && html`
+                <!-- Pronósticos de los Últimos Partidos Cerrados -->
+                ${user.ultimos_pronosticos && user.ultimos_pronosticos.length > 0 && html`
                   <div class="mt-2.5 pt-2.5 border-t border-slate-150 w-full flex flex-col items-center">
-                    <span class="text-[8px] font-bold text-slate-500 uppercase tracking-wider">Últ. Pronóstico</span>
-                    <span class="text-[9px] font-bold text-[#008f5c] truncate max-w-full leading-tight mt-0.5" title="${ultimoPartido.equipo_a} vs ${ultimoPartido.equipo_b}">
-                      ${ultimoPartido.equipo_a} vs ${ultimoPartido.equipo_b}
-                    </span>
-                    <div class="flex items-center justify-center space-x-1.5 mt-1">
-                      ${user.ultimo_pronostico
-                        ? html`
-                            <span class="text-xs font-black text-slate-800">${user.ultimo_pronostico.goles_a} - ${user.ultimo_pronostico.goles_b}</span>
-                            <span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-black uppercase tracking-wider ${
-                              user.ultimo_pronostico.puntos_ganados === 2
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                : user.ultimo_pronostico.puntos_ganados === 1
-                                  ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                                  : 'bg-rose-50 text-rose-700 border border-rose-100'
-                            }">
-                              ${user.ultimo_pronostico.puntos_ganados === 2 ? '+2' : user.ultimo_pronostico.puntos_ganados === 1 ? '+1' : '0'} Pts
-                            </span>
-                          `
-                        : html`<span class="text-[9px] text-slate-450 italic">No apostó</span>`
-                      }
+                    <span class="text-[8px] font-bold text-slate-550 uppercase tracking-wider mb-1">Últimos Pronósticos</span>
+                    <div class="flex flex-col space-y-1.5 w-full">
+                      ${user.ultimos_pronosticos.map((item) => {
+                        const titleText = `${item.equipo_a} vs ${item.equipo_b} ${item.goles_a_oficial !== null ? `(Oficial: ${item.goles_a_oficial}-${item.goles_b_oficial})` : '(Pendiente)'}`;
+                        return html`
+                          <div key=${item.partido_id} class="flex flex-col items-center justify-center p-1 rounded bg-slate-50/50 border border-slate-100" title=${titleText}>
+                            <div class="flex items-center justify-center space-x-1">
+                              <img src=${getFlagUrl(item.equipo_a)} class="w-4 h-2.5 object-cover rounded shadow-xs" alt=${item.equipo_a} />
+                              <span class="text-[9.5px] font-black text-slate-800">
+                                ${item.no_aposto ? '-' : `${item.goles_a} - ${item.goles_b}`}
+                              </span>
+                              <img src=${getFlagUrl(item.equipo_b)} class="w-4 h-2.5 object-cover rounded shadow-xs" alt=${item.equipo_b} />
+                            </div>
+                            <div class="mt-0.5 leading-none">
+                              ${item.no_aposto
+                                ? html`<span class="text-[7px] bg-slate-100 text-slate-450 px-1 py-0.2 rounded font-bold uppercase tracking-wider">Sin Pts</span>`
+                                : item.resultado_oficial === null
+                                  ? html`<span class="inline-flex items-center px-1 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 animate-pulse">Pend.</span>`
+                                  : html`
+                                      <span class="inline-flex items-center px-1 py-0.2 rounded text-[7px] font-black uppercase tracking-wider ${
+                                        item.puntos_ganados === 2
+                                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                          : item.puntos_ganados === 1
+                                            ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                            : 'bg-rose-50 text-rose-700 border border-rose-100'
+                                      }">
+                                        ${item.puntos_ganados === 2 ? '+2' : item.puntos_ganados === 1 ? '+1' : '0'} Pts
+                                      </span>
+                                    `
+                              }
+                            </div>
+                          </div>
+                        `;
+                      })}
                     </div>
                   </div>
                 `}
@@ -265,13 +280,8 @@ export function LeaderboardView({ leaderboard, session }) {
               <th class="py-2.5 px-3 sm:px-5 text-center w-12 sm:w-16">Pos</th>
               <th class="py-2.5 px-3 sm:px-5">Colaborador</th>
               <th class="py-2.5 px-3 sm:px-5 text-center">Estadísticas</th>
-              <th class="py-2.5 px-3 sm:px-5 text-center min-w-[125px]" title="Pronóstico del último partido oficial jugado">
-                Últ. Pronóstico
-                ${ultimoPartido && html`
-                  <span class="block text-[8.5px] text-slate-500 normal-case font-bold tracking-normal mt-0.5">
-                    ${ultimoPartido.equipo_a} vs ${ultimoPartido.equipo_b}
-                  </span>
-                `}
+              <th class="py-2.5 px-3 sm:px-5 text-center min-w-[145px]" title="Pronósticos de los 2 últimos partidos cerrados (Pasa el cursor para ver detalles)">
+                Últimos Pronósticos
               </th>
               <th class="py-2.5 px-3 sm:px-5 text-center w-28">Puntos Totales</th>
             </tr>
@@ -314,24 +324,51 @@ export function LeaderboardView({ leaderboard, session }) {
                           </span>
                         </div>
                       </td>
-                      <td class="py-2.5 px-3 sm:px-5 text-center whitespace-nowrap">
-                        ${user.ultimo_pronostico
-                          ? html`
-                              <div class="flex flex-col items-center justify-center">
-                                <span class="font-bold text-slate-800">${user.ultimo_pronostico.goles_a} - ${user.ultimo_pronostico.goles_b}</span>
-                                <span class="inline-flex items-center px-1.5 py-0.2 mt-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
-                                  user.ultimo_pronostico.puntos_ganados === 2
-                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                    : user.ultimo_pronostico.puntos_ganados === 1
-                                      ? 'bg-blue-50 text-blue-700 border border-blue-100'
-                                      : 'bg-rose-50 text-rose-700 border border-rose-100'
-                                }">
-                                  ${user.ultimo_pronostico.puntos_ganados === 2 ? '+2 Pts' : user.ultimo_pronostico.puntos_ganados === 1 ? '+1 Pt' : '0 Pts'}
-                                </span>
-                              </div>
-                            `
-                          : html`<span class="text-slate-400 italic text-xs">No apostó</span>`
-                        }
+                      <td class="py-2.5 px-3 sm:px-5 text-center">
+                        <div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                          ${user.ultimos_pronosticos && user.ultimos_pronosticos.length > 0
+                            ? user.ultimos_pronosticos.map((item) => {
+                                const titleText = `${item.equipo_a} vs ${item.equipo_b} ${item.goles_a_oficial !== null ? `(Oficial: ${item.goles_a_oficial}-${item.goles_b_oficial})` : '(Pendiente)'}`;
+                                return html`
+                                  <div key=${item.partido_id} class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 bg-white shadow-2xs max-w-[125px] w-full text-center hover:bg-slate-50 transition-colors" title=${titleText}>
+                                    <div class="flex items-center justify-center space-x-1">
+                                      <img src=${getFlagUrl(item.equipo_a)} class="w-5 h-3 object-cover rounded border border-slate-100" alt=${item.equipo_a} />
+                                      <span class="font-black text-slate-800 text-[10px]">
+                                        ${item.no_aposto ? '-' : `${item.goles_a}-${item.goles_b}`}
+                                      </span>
+                                      <img src=${getFlagUrl(item.equipo_b)} class="w-5 h-3 object-cover rounded border border-slate-100" alt=${item.equipo_b} />
+                                    </div>
+                                    
+                                    ${item.goles_a_oficial !== null && html`
+                                      <div class="text-[8px] text-slate-500 font-bold mt-0.5 leading-none">
+                                        Ofi: ${item.goles_a_oficial}-${item.goles_b_oficial}
+                                      </div>
+                                    `}
+                                    
+                                    <div class="mt-1 leading-none">
+                                      ${item.no_aposto
+                                        ? html`<span class="text-[8px] bg-slate-50 text-slate-450 px-1 py-0.2 rounded font-bold uppercase tracking-wider">Sin Pts</span>`
+                                        : item.resultado_oficial === null
+                                          ? html`<span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 animate-pulse">Pend.</span>`
+                                          : html`
+                                              <span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-black uppercase tracking-wider ${
+                                                item.puntos_ganados === 2
+                                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
+                                                  : item.puntos_ganados === 1
+                                                    ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                                                    : 'bg-rose-50 text-rose-700 border border-rose-100'
+                                              }">
+                                                ${item.puntos_ganados === 2 ? '+2 Pts' : item.puntos_ganados === 1 ? '+1 Pt' : '0 Pts'}
+                                              </span>
+                                            `
+                                      }
+                                    </div>
+                                  </div>
+                                `;
+                              })
+                            : html`<span class="text-slate-400 italic text-xs">Sin registros</span>`
+                          }
+                        </div>
                       </td>
                       <td class="py-2.5 px-3 sm:px-5 text-center font-bold font-outfit text-slate-850 text-xs sm:text-base">
                         ${pts} <span class="text-[10px] font-medium text-slate-500 lowercase">pts</span>

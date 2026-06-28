@@ -324,31 +324,34 @@ class SupabaseRealClient {
       }
     }
 
-    // 3.5. Obtener el último partido que ya se jugó (que tiene resultado)
-    const { data: ultimoJugado, error: ujError } = await this.client
-      .from('partidos')
+    // 3.5. Obtener los 2 últimos partidos cerrados
+    const { data: ultimosJugados, error: ujError } = await this.client
+      .from('view_partidos_pasados')
       .select('id, numero_partido, fecha_hora, equipo_a, equipo_b, goles_a, goles_b, resultado')
-      .not('resultado', 'is', null)
       .order('fecha_hora', { ascending: false })
       .order('numero_partido', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(2);
 
-    let pronosticosUltimoMap = {};
-    if (!ujError && ultimoJugado) {
-      const { data: pronosUltimo, error: puError } = await this.client
+    let pronosticosUltimosMap = {};
+    if (!ujError && ultimosJugados && ultimosJugados.length > 0) {
+      const matchIds = ultimosJugados.map(m => m.id);
+      const { data: pronosUltimos, error: puError } = await this.client
         .from('pronosticos')
-        .select('usuario_id, prediccion, goles_a, goles_b, puntos_ganados')
-        .eq('partido_id', ultimoJugado.id);
+        .select('usuario_id, partido_id, prediccion, goles_a, goles_b, puntos_ganados')
+        .in('partido_id', matchIds);
       
-      if (!puError && pronosUltimo) {
-        pronosUltimo.forEach(p => {
-          pronosticosUltimoMap[p.usuario_id] = {
+      if (!puError && pronosUltimos) {
+        pronosUltimos.forEach(p => {
+          if (!pronosticosUltimosMap[p.usuario_id]) {
+            pronosticosUltimosMap[p.usuario_id] = [];
+          }
+          pronosticosUltimosMap[p.usuario_id].push({
+            partido_id: p.partido_id,
             prediccion: p.prediccion,
             goles_a: p.goles_a,
             goles_b: p.goles_b,
             puntos_ganados: p.puntos_ganados
-          };
+          });
         });
       }
     }
@@ -413,7 +416,47 @@ class SupabaseRealClient {
       const totalPredictions = userPredictionsCountMap[u.id] || 0;
       const perdidos = Math.max(0, totalPredictions - acertados);
       const no_apostados = Math.max(0, totalFinished - totalPredictions);
-      const ultimoPronostico = pronosticosUltimoMap[u.id] || null;
+
+      const ultimos_pronosticos = (ultimosJugados || []).map(partido => {
+        const prList = pronosticosUltimosMap[u.id] || [];
+        const pr = prList.find(p => p.partido_id === partido.id);
+        return pr ? {
+          partido_id: partido.id,
+          numero_partido: partido.numero_partido,
+          equipo_a: partido.equipo_a,
+          equipo_b: partido.equipo_b,
+          goles_a_oficial: partido.goles_a,
+          goles_b_oficial: partido.goles_b,
+          resultado_oficial: partido.resultado,
+          prediccion: pr.prediccion,
+          goles_a: pr.goles_a,
+          goles_b: pr.goles_b,
+          puntos_ganados: pr.puntos_ganados,
+          no_aposto: false
+        } : {
+          partido_id: partido.id,
+          numero_partido: partido.numero_partido,
+          equipo_a: partido.equipo_a,
+          equipo_b: partido.equipo_b,
+          goles_a_oficial: partido.goles_a,
+          goles_b_oficial: partido.goles_b,
+          resultado_oficial: partido.resultado,
+          prediccion: null,
+          goles_a: null,
+          goles_b: null,
+          puntos_ganados: 0,
+          no_aposto: true
+        };
+      });
+
+      // Mantener compatibilidad hacia atrás
+      const ultimoJugado = ultimosJugados ? ultimosJugados[0] : null;
+      const ultimoPronostico = ultimos_pronosticos && ultimos_pronosticos[0] ? {
+        prediccion: ultimos_pronosticos[0].prediccion,
+        goles_a: ultimos_pronosticos[0].goles_a,
+        goles_b: ultimos_pronosticos[0].goles_b,
+        puntos_ganados: ultimos_pronosticos[0].puntos_ganados
+      } : null;
 
       return {
         ...u,
@@ -432,7 +475,8 @@ class SupabaseRealClient {
           goles_b: ultimoJugado.goles_b,
           resultado: ultimoJugado.resultado
         } : null,
-        ultimo_pronostico: ultimoPronostico
+        ultimo_pronostico: ultimoPronostico,
+        ultimos_pronosticos: ultimos_pronosticos
       };
     });
 
