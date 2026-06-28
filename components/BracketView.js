@@ -63,22 +63,22 @@ export function BracketView({ fixture = [] }) {
 
   // Datos mock oficiales de la estructura si la base de datos está vacía para eliminación directa
   const getMock16 = () => [
-    { num: 73, a: '2º Grupo A', b: '2º Grupo B', label: '16avos 1' },
-    { num: 74, a: '1º Grupo E', b: '3º Grupo A/B/C/D/F', label: '16avos 2' },
-    { num: 75, a: '1º Grupo F', b: '2º Grupo C', label: '16avos 3' },
-    { num: 76, a: '1º Grupo C', b: '2º Grupo F', label: '16avos 4' },
-    { num: 77, a: '1º Grupo I', b: '3º Grupo C/D/F/G/H', label: '16avos 5' },
-    { num: 78, a: '2º Grupo E', b: '2º Grupo I', label: '16avos 6' },
-    { num: 79, a: '1º Grupo A', b: '3º Grupo C/E/F/H/I', label: '16avos 7' },
-    { num: 80, a: '1º Grupo L', b: '3º Grupo E/H/I/J/K', label: '16avos 8' },
-    { num: 81, a: '1º Grupo D', b: '3º Grupo B/E/F/I/J', label: '16avos 9' },
-    { num: 82, a: '1º Grupo G', b: '3º Grupo A/E/H/I/J', label: '16avos 10' },
-    { num: 83, a: '2º Grupo K', b: '2º Grupo L', label: '16avos 11' },
-    { num: 84, a: '1º Grupo H', b: '2º Grupo J', label: '16avos 12' },
-    { num: 85, a: '1º Grupo B', b: '3º Grupo E/F/G/I/J', label: '16avos 13' },
-    { num: 86, a: '1º Grupo J', b: '2º Grupo H', label: '16avos 14' },
-    { num: 87, a: '1º Grupo K', b: '3º Grupo D/E/I/J/L', label: '16avos 15' },
-    { num: 88, a: '2º Grupo D', b: '2º Grupo G', label: '16avos 16' },
+    { num: 73, a: 'Sudáfrica', b: 'Canadá', label: '16avos 1' },
+    { num: 74, a: 'Alemania', b: 'Paraguay', label: '16avos 2' },
+    { num: 75, a: 'Países Bajos', b: 'Marruecos', label: '16avos 3' },
+    { num: 76, a: 'Brasil', b: 'Japón', label: '16avos 4' },
+    { num: 77, a: 'Francia', b: 'Suecia', label: '16avos 5' },
+    { num: 78, a: 'Costa de Marfil', b: 'Noruega', label: '16avos 6' },
+    { num: 79, a: 'México', b: 'Ecuador', label: '16avos 7' },
+    { num: 80, a: 'Inglaterra', b: 'RD Congo', label: '16avos 8' },
+    { num: 81, a: 'Bélgica', b: 'Senegal', label: '16avos 9' },
+    { num: 82, a: 'EE. UU.', b: 'Bosnia y Herzegovina', label: '16avos 10' },
+    { num: 83, a: 'España', b: 'Austria', label: '16avos 11' },
+    { num: 84, a: 'Portugal', b: 'Croacia', label: '16avos 12' },
+    { num: 85, a: 'Suiza', b: 'Argelia', label: '16avos 13' },
+    { num: 86, a: 'Argentina', b: 'Islas de Cabo Verde', label: '16avos 14' },
+    { num: 87, a: 'Colombia', b: 'Ghana', label: '16avos 15' },
+    { num: 88, a: 'Australia', b: 'Egipto', label: '16avos 16' },
   ];
 
   const getMock8 = () => [
