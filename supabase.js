@@ -602,42 +602,42 @@ class SupabaseRealClient {
 
     const BRACKET_MATCHES_DEF = [
       // 16avos de Final (Matches 73 to 88)
-      { numero_partido: 73, fase: '16avos', equipo_a: '1º Grupo A', equipo_b: '3º Grupo C/D/E', fecha_hora: '2026-06-28T14:00:00-05:00', sede: 'Estadio Los Angeles', ciudad: 'Los Ángeles, US 🇺🇸' },
-      { numero_partido: 74, fase: '16avos', equipo_a: '2º Grupo A', equipo_b: '2º Grupo B', fecha_hora: '2026-06-29T12:00:00-05:00', sede: 'Estadio Houston', ciudad: 'Houston, US 🇺🇸' },
-      { numero_partido: 75, fase: '16avos', equipo_a: '1º Grupo B', equipo_b: '3º Grupo A/C/D', fecha_hora: '2026-06-29T15:30:00-05:00', sede: 'Estadio Boston', ciudad: 'Boston, US 🇺🇸' },
-      { numero_partido: 76, fase: '16avos', equipo_a: '1º Grupo C', equipo_b: '3º Grupo F/G/H', fecha_hora: '2026-06-29T20:00:00-05:00', sede: 'Estadio Monterrey', ciudad: 'Monterrey, MX 🇲🇽' },
-      { numero_partido: 77, fase: '16avos', equipo_a: '2º Grupo C', equipo_b: '2º Grupo D', fecha_hora: '2026-06-30T12:00:00-05:00', sede: 'Estadio Dallas', ciudad: 'Dallas, US 🇺🇸' },
-      { numero_partido: 78, fase: '16avos', equipo_a: '1º Grupo D', equipo_b: '3º Grupo I/J/K', fecha_hora: '2026-06-30T16:00:00-05:00', sede: 'Estadio Nueva York/Nueva Jersey', ciudad: 'Nueva Jersey, US 🇺🇸' },
-      { numero_partido: 79, fase: '16avos', equipo_a: '1º Grupo E', equipo_b: '3º Grupo A/B/C', fecha_hora: '2026-06-30T20:00:00-05:00', sede: 'Estadio Ciudad de México', ciudad: 'Ciudad de México, MX 🇲🇽' },
-      { numero_partido: 80, fase: '16avos', equipo_a: '2º Grupo E', equipo_b: '2º Grupo F', fecha_hora: '2026-07-01T11:00:00-05:00', sede: 'Estadio Atlanta', ciudad: 'Atlanta, US 🇺🇸' },
-      { numero_partido: 81, fase: '16avos', equipo_a: '1º Grupo F', equipo_b: '3º Grupo I/J/L', fecha_hora: '2026-07-01T15:00:00-05:00', sede: 'Estadio Seattle', ciudad: 'Seattle, US 🇺🇸' },
-      { numero_partido: 82, fase: '16avos', equipo_a: '1º Grupo G', equipo_b: '3º Grupo J/K/L', fecha_hora: '2026-07-01T19:00:00-05:00', sede: 'Estadio de la Bahía de San Francisco', ciudad: 'Área de la Bahía de San Francisco, US 🇺🇸' },
-      { numero_partido: 83, fase: '16avos', equipo_a: '2º Grupo G', equipo_b: '2º Grupo H', fecha_hora: '2026-07-02T14:00:00-05:00', sede: 'Estadio Los Angeles', ciudad: 'Los Ángeles, US 🇺🇸' },
-      { numero_partido: 84, fase: '16avos', equipo_a: '1º Grupo H', equipo_b: '3º Grupo D/E/F', fecha_hora: '2026-07-02T18:00:00-05:00', sede: 'Estadio de Toronto', ciudad: 'Toronto, CA 🇨🇦' },
-      { numero_partido: 85, fase: '16avos', equipo_a: '1º Grupo I', equipo_b: '3º Grupo G/H/I', fecha_hora: '2026-07-02T22:00:00-05:00', sede: 'Estadio BC Place Vancouver', ciudad: 'Vancouver, CA 🇨🇦' },
-      { numero_partido: 86, fase: '16avos', equipo_a: '2º Grupo I', equipo_b: '2º Grupo J', fecha_hora: '2026-07-03T13:00:00-05:00', sede: 'Estadio Dallas', ciudad: 'Dallas, US 🇺🇸' },
-      { numero_partido: 87, fase: '16avos', equipo_a: '1º Grupo J', equipo_b: '3º Grupo E/F/G', fecha_hora: '2026-07-03T17:00:00-05:00', sede: 'Estadio Miami', ciudad: 'Miami, US 🇺🇸' },
-      { numero_partido: 88, fase: '16avos', equipo_a: '1º Grupo K', equipo_b: '2º Grupo L', fecha_hora: '2026-07-03T20:30:00-05:00', sede: 'Estadio Kansas City', ciudad: 'Kansas City, US 🇺🇸' },
+      { numero_partido: 73, fase: '16avos', equipo_a: '2º Grupo A', equipo_b: '2º Grupo B', fecha_hora: '2026-06-28T14:00:00-05:00', sede: 'Estadio Los Angeles', ciudad: 'Los Ángeles, US 🇺🇸' },
+      { numero_partido: 74, fase: '16avos', equipo_a: '1º Grupo E', equipo_b: '3º Grupo A/B/C/D/F', fecha_hora: '2026-06-29T15:30:00-05:00', sede: 'Estadio Boston', ciudad: 'Boston, US 🇺🇸' },
+      { numero_partido: 75, fase: '16avos', equipo_a: '1º Grupo F', equipo_b: '2º Grupo C', fecha_hora: '2026-06-29T20:00:00-05:00', sede: 'Estadio Monterrey', ciudad: 'Monterrey, MX 🇲🇽' },
+      { numero_partido: 76, fase: '16avos', equipo_a: '1º Grupo C', equipo_b: '2º Grupo F', fecha_hora: '2026-06-29T12:00:00-05:00', sede: 'Estadio Houston', ciudad: 'Houston, US 🇺🇸' },
+      { numero_partido: 77, fase: '16avos', equipo_a: '1º Grupo I', equipo_b: '3º Grupo C/D/F/G/H', fecha_hora: '2026-06-30T16:00:00-05:00', sede: 'Estadio Nueva York/Nueva Jersey', ciudad: 'Nueva Jersey, US 🇺🇸' },
+      { numero_partido: 78, fase: '16avos', equipo_a: '2º Grupo E', equipo_b: '2º Grupo I', fecha_hora: '2026-06-30T12:00:00-05:00', sede: 'Estadio Dallas', ciudad: 'Dallas, US 🇺🇸' },
+      { numero_partido: 79, fase: '16avos', equipo_a: '1º Grupo A', equipo_b: '3º Grupo C/E/F/H/I', fecha_hora: '2026-06-30T20:00:00-05:00', sede: 'Estadio Ciudad de México', ciudad: 'Ciudad de México, MX 🇲🇽' },
+      { numero_partido: 80, fase: '16avos', equipo_a: '1º Grupo L', equipo_b: '3º Grupo E/H/I/J/K', fecha_hora: '2026-07-01T11:00:00-05:00', sede: 'Estadio Atlanta', ciudad: 'Atlanta, US 🇺🇸' },
+      { numero_partido: 81, fase: '16avos', equipo_a: '1º Grupo D', equipo_b: '3º Grupo B/E/F/I/J', fecha_hora: '2026-07-01T15:00:00-05:00', sede: 'Estadio Seattle', ciudad: 'Seattle, US 🇺🇸' },
+      { numero_partido: 82, fase: '16avos', equipo_a: '1º Grupo G', equipo_b: '3º Grupo A/E/H/I/J', fecha_hora: '2026-07-01T19:00:00-05:00', sede: 'Estadio de la Bahía de San Francisco', ciudad: 'Área de la Bahía de San Francisco, US 🇺🇸' },
+      { numero_partido: 83, fase: '16avos', equipo_a: '2º Grupo K', equipo_b: '2º Grupo L', fecha_hora: '2026-07-02T14:00:00-05:00', sede: 'Estadio Los Angeles', ciudad: 'Los Ángeles, US 🇺🇸' },
+      { numero_partido: 84, fase: '16avos', equipo_a: '1º Grupo H', equipo_b: '2º Grupo J', fecha_hora: '2026-07-02T18:00:00-05:00', sede: 'Estadio de Toronto', ciudad: 'Toronto, CA 🇨🇦' },
+      { numero_partido: 85, fase: '16avos', equipo_a: '1º Grupo B', equipo_b: '3º Grupo E/F/G/I/J', fecha_hora: '2026-07-02T22:00:00-05:00', sede: 'Estadio BC Place Vancouver', ciudad: 'Vancouver, CA 🇨🇦' },
+      { numero_partido: 86, fase: '16avos', equipo_a: '1º Grupo J', equipo_b: '2º Grupo H', fecha_hora: '2026-07-03T17:00:00-05:00', sede: 'Estadio Miami', ciudad: 'Miami, US 🇺🇸' },
+      { numero_partido: 87, fase: '16avos', equipo_a: '1º Grupo K', equipo_b: '3º Grupo D/E/I/J/L', fecha_hora: '2026-07-03T20:30:00-05:00', sede: 'Estadio Kansas City', ciudad: 'Kansas City, US 🇺🇸' },
+      { numero_partido: 88, fase: '16avos', equipo_a: '2º Grupo D', equipo_b: '2º Grupo G', fecha_hora: '2026-07-03T13:00:00-05:00', sede: 'Estadio Dallas', ciudad: 'Dallas, US 🇺🇸' },
 
       // Octavos de Final (Matches 89 to 96)
-      { numero_partido: 89, fase: 'Octavos', equipo_a: 'Ganador M73', equipo_b: 'Ganador M74', fecha_hora: '2026-07-04T16:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
-      { numero_partido: 90, fase: 'Octavos', equipo_a: 'Ganador M75', equipo_b: 'Ganador M76', fecha_hora: '2026-07-04T21:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
-      { numero_partido: 91, fase: 'Octavos', equipo_a: 'Ganador M77', equipo_b: 'Ganador M78', fecha_hora: '2026-07-05T16:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
+      { numero_partido: 89, fase: 'Octavos', equipo_a: 'Ganador M73', equipo_b: 'Ganador M75', fecha_hora: '2026-07-04T16:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
+      { numero_partido: 90, fase: 'Octavos', equipo_a: 'Ganador M74', equipo_b: 'Ganador M77', fecha_hora: '2026-07-04T21:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
+      { numero_partido: 91, fase: 'Octavos', equipo_a: 'Ganador M76', equipo_b: 'Ganador M78', fecha_hora: '2026-07-05T16:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
       { numero_partido: 92, fase: 'Octavos', equipo_a: 'Ganador M79', equipo_b: 'Ganador M80', fecha_hora: '2026-07-05T21:00:00-05:00', sede: 'BC Place', ciudad: 'Vancouver, CA 🇨🇦' },
-      { numero_partido: 93, fase: 'Octavos', equipo_a: 'Ganador M81', equipo_b: 'Ganador M82', fecha_hora: '2026-07-06T16:00:00-05:00', sede: 'Gillette Stadium', ciudad: 'Boston, US 🇺🇸' },
-      { numero_partido: 94, fase: 'Octavos', equipo_a: 'Ganador M83', equipo_b: 'Ganador M84', fecha_hora: '2026-07-06T21:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
-      { numero_partido: 95, fase: 'Octavos', equipo_a: 'Ganador M85', equipo_b: 'Ganador M86', fecha_hora: '2026-07-07T16:00:00-05:00', sede: 'Estadio Azteca', ciudad: 'Ciudad de México, MX 🇲🇽' },
-      { numero_partido: 96, fase: 'Octavos', equipo_a: 'Ganador M87', equipo_b: 'Ganador M88', fecha_hora: '2026-07-07T21:00:00-05:00', sede: 'Hard Rock Stadium', ciudad: 'Miami, US 🇺🇸' },
+      { numero_partido: 93, fase: 'Octavos', equipo_a: 'Ganador M83', equipo_b: 'Ganador M84', fecha_hora: '2026-07-06T16:00:00-05:00', sede: 'Gillette Stadium', ciudad: 'Boston, US 🇺🇸' },
+      { numero_partido: 94, fase: 'Octavos', equipo_a: 'Ganador M81', equipo_b: 'Ganador M82', fecha_hora: '2026-07-06T21:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
+      { numero_partido: 95, fase: 'Octavos', equipo_a: 'Ganador M86', equipo_b: 'Ganador M88', fecha_hora: '2026-07-07T16:00:00-05:00', sede: 'Estadio Azteca', ciudad: 'Ciudad de México, MX 🇲🇽' },
+      { numero_partido: 96, fase: 'Octavos', equipo_a: 'Ganador M85', equipo_b: 'Ganador M87', fecha_hora: '2026-07-07T21:00:00-05:00', sede: 'Hard Rock Stadium', ciudad: 'Miami, US 🇺🇸' },
 
       // Cuartos de Final (Matches 97 to 100)
       { numero_partido: 97, fase: 'Cuartos', equipo_a: 'Ganador M89', equipo_b: 'Ganador M90', fecha_hora: '2026-07-09T17:00:00-05:00', sede: 'Gillette Stadium', ciudad: 'Boston, US 🇺🇸' },
-      { numero_partido: 98, fase: 'Cuartos', equipo_a: 'Ganador M91', equipo_b: 'Ganador M92', fecha_hora: '2026-07-10T17:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
-      { numero_partido: 99, fase: 'Cuartos', equipo_a: 'Ganador M93', equipo_b: 'Ganador M94', fecha_hora: '2026-07-11T17:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
+      { numero_partido: 98, fase: 'Cuartos', equipo_a: 'Ganador M93', equipo_b: 'Ganador M94', fecha_hora: '2026-07-10T17:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
+      { numero_partido: 99, fase: 'Cuartos', equipo_a: 'Ganador M91', equipo_b: 'Ganador M92', fecha_hora: '2026-07-11T17:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
       { numero_partido: 100, fase: 'Cuartos', equipo_a: 'Ganador M95', equipo_b: 'Ganador M96', fecha_hora: '2026-07-12T17:00:00-05:00', sede: 'Arrowhead Stadium', ciudad: 'Kansas City, US 🇺🇸' },
 
       // Semifinales (Matches 101 to 102)
-      { numero_partido: 101, fase: 'Semifinal', equipo_a: 'Ganador M97', equipo_b: 'Ganador M98', fecha_hora: '2026-07-15T19:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
-      { numero_partido: 102, fase: 'Semifinal', equipo_a: 'Ganador M99', equipo_b: 'Ganador M100', fecha_hora: '2026-07-16T19:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
+      { numero_partido: 101, fase: 'Semifinal', equipo_a: 'Ganador M97', equipo_b: 'Ganador M98', fecha_hora: '2026-07-15T19:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
+      { numero_partido: 102, fase: 'Semifinal', equipo_a: 'Ganador M99', equipo_b: 'Ganador M100', fecha_hora: '2026-07-16T19:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
 
       // Gran Final (Match 104)
       { numero_partido: 104, fase: 'Final', equipo_a: 'Ganador M101', equipo_b: 'Ganador M102', fecha_hora: '2026-07-19T16:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York/Nueva Jersey, US 🇺🇸' }
@@ -858,12 +858,16 @@ class SupabaseRealClient {
       const payload = {};
       let changed = false;
 
-      if (updateObj.equipo_a !== undefined && match.equipo_a !== updateObj.equipo_a) {
-        payload.equipo_a = updateObj.equipo_a;
+      // Si el equipo calculado está definido se usa, de lo contrario se revierte al placeholder oficial
+      const targetA = updateObj.equipo_a !== undefined ? updateObj.equipo_a : def.equipo_a;
+      if (match.equipo_a !== targetA) {
+        payload.equipo_a = targetA;
         changed = true;
       }
-      if (updateObj.equipo_b !== undefined && match.equipo_b !== updateObj.equipo_b) {
-        payload.equipo_b = updateObj.equipo_b;
+
+      const targetB = updateObj.equipo_b !== undefined ? updateObj.equipo_b : def.equipo_b;
+      if (match.equipo_b !== targetB) {
+        payload.equipo_b = targetB;
         changed = true;
       }
 
