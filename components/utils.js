@@ -57,5 +57,18 @@ export const getFlagUrl = (countryName) => {
     'Panamá': 'pa'
   };
   const code = mapping[countryName];
-  return code ? `https://flagcdn.com/w80/${code}.png` : `https://placehold.co/80x50/1f2937/ffffff?text=${countryName.substring(0, 3).toUpperCase()}`;
+  return code ? `https://flagcdn.com/w80/${code}.png` : `https://placehold.co/80x50/1f2937/ffffff?text=${(countryName || '').substring(0, 3).toUpperCase()}`;
 };
+
+export const isPlaceholderTeam = (teamName) => {
+  if (!teamName) return true;
+  const lower = teamName.toLowerCase();
+  return (
+    lower.includes('grupo') ||
+    lower.includes('º') ||
+    lower.includes('ganador') ||
+    lower.includes('perdedor') ||
+    /m\d+/.test(lower)
+  );
+};
+

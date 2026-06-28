@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import * as Lucide from 'lucide-react';
 import { db } from '../supabase.js';
-import { getFlagUrl } from './utils.js';
+import { getFlagUrl, isPlaceholderTeam } from './utils.js';
 import { MatchCard } from './MatchCard.js';
 
 const html = htm.bind(React.createElement);
@@ -33,8 +33,13 @@ export function DashboardView({
   const hasGroupMatches = fixture.some(p => p.grupo !== null || (p.fase && p.fase.toLowerCase().includes('grupo')));
 
   let matchesToShow = fixture;
+  if (dashboardTab === 'proximos') {
+    // Only show matches for prediction if both teams are fully defined/resolved
+    matchesToShow = fixture.filter(p => !isPlaceholderTeam(p.equipo_a) && !isPlaceholderTeam(p.equipo_b));
+  }
+
   if (hasGroupMatches && selectedJornada !== 'Todas') {
-    matchesToShow = fixture.filter(p => Number(p.jornada) === Number(selectedJornada));
+    matchesToShow = matchesToShow.filter(p => Number(p.jornada) === Number(selectedJornada));
   }
 
   const sortedMatches = [...matchesToShow].sort((a, b) => {

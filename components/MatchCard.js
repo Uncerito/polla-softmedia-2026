@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import { MapPin } from 'lucide-react';
-import { getFlagUrl } from './utils.js';
+import { getFlagUrl, isPlaceholderTeam } from './utils.js';
 
 const html = htm.bind(React.createElement);
 
@@ -102,7 +102,9 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
   const fecha = new Date(partido.fecha_hora);
   const charA = getTeamCharacter(partido.equipo_a);
   const charB = getTeamCharacter(partido.equipo_b);
-  const isLocked = !isOpen;
+  const isPlaceholder = isPlaceholderTeam(partido.equipo_a) || isPlaceholderTeam(partido.equipo_b);
+  const isLocked = !isOpen || isPlaceholder;
+  const statusTimeLeft = isPlaceholder ? 'Por definir' : timeLeft;
   const isSavedUnchanged =
     partido.pronostico_goles_a !== null &&
     partido.pronostico_goles_a !== undefined &&
@@ -214,7 +216,7 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
               <span class="truncate max-w-[180px] text-[9px] text-slate-400" title=${partido.sede || ''}>🏟️ ${partido.sede || 'Por definir'}</span>
             </div>
             <div class="text-right flex flex-col space-y-0.5">
-              <span class="text-slate-400 uppercase tracking-widest text-[8px] font-bold">${timeLeft}</span>
+              <span class="text-slate-400 uppercase tracking-widest text-[8px] font-bold">${statusTimeLeft}</span>
             </div>
           </div>
 
