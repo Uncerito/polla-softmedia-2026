@@ -338,6 +338,24 @@ export function AdminView({ adminUsers, fixture, onRefresh, addToast }) {
     }
   };
 
+  const [calculatingBracket, setCalculatingBracket] = useState(false);
+
+  const handleCalculateBracket = async () => {
+    if (!confirm('¿Deseas calcular los clasificados y actualizar los emparejamientos del Bracket según los resultados oficiales actuales?')) {
+      return;
+    }
+    setCalculatingBracket(true);
+    try {
+      await db.calculateAndUpdateBracket();
+      addToast('¡Bracket de playoffs calculado y actualizado con éxito!');
+      onRefresh();
+    } catch (err) {
+      addToast('Error al calcular el bracket: ' + err.message, 'error');
+    } finally {
+      setCalculatingBracket(false);
+    }
+  };
+
     return html`
     <div class="space-y-5">
       <!-- Banner Cabecera Mundialista (Tamaño optimizado) -->
@@ -373,40 +391,54 @@ export function AdminView({ adminUsers, fixture, onRefresh, addToast }) {
         <div class="lg:col-span-3 space-y-4">
           ${adminTab === 'resultados' && html`
             <div class="space-y-4">
-              <!-- Sub-navegación por Fecha de Partido -->
-              <div class="flex items-center space-x-2.5 pb-2.5 border-b border-slate-200 overflow-x-auto">
+              <!-- Sub-navegación por Fecha de Partido + Botón de Cálculo -->
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-2.5 border-b border-slate-200">
+                <div class="flex items-center space-x-2.5 overflow-x-auto">
+                  <button 
+                    onClick=${() => setSubTab('hoy')} 
+                    class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
+                      subTab === 'hoy'
+                        ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                    }"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full ${matchesToday.length > 0 ? 'bg-amber-400 animate-pulse' : 'bg-slate-400'}"></span>
+                    <span>De Hoy (${matchesToday.length})</span>
+                  </button>
+                  
+                  <button 
+                    onClick=${() => setSubTab('proximos')} 
+                    class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
+                      subTab === 'proximos'
+                        ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                    }"
+                  >
+                    <span>Próximos (${matchesUpcoming.length})</span>
+                  </button>
+                  
+                  <button 
+                    onClick=${() => setSubTab('pasados')} 
+                    class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
+                      subTab === 'pasados'
+                        ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
+                    }"
+                  >
+                    <span>Pasados (${matchesPast.length})</span>
+                  </button>
+                </div>
+
                 <button 
-                  onClick=${() => setSubTab('hoy')} 
-                  class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
-                    subTab === 'hoy'
-                      ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
-                  }"
+                  disabled=${calculatingBracket}
+                  onClick=${handleCalculateBracket}
+                  class="px-3.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white shadow-sm flex items-center justify-center space-x-1.5 self-end sm:self-auto cursor-pointer transition-all"
+                  title="Calcular clasificados y actualizar Camino a la Copa"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full ${matchesToday.length > 0 ? 'bg-amber-400 animate-pulse' : 'bg-slate-400'}"></span>
-                  <span>De Hoy (${matchesToday.length})</span>
-                </button>
-                
-                <button 
-                  onClick=${() => setSubTab('proximos')} 
-                  class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
-                    subTab === 'proximos'
-                      ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
-                  }"
-                >
-                  <span>Próximos (${matchesUpcoming.length})</span>
-                </button>
-                
-                <button 
-                  onClick=${() => setSubTab('pasados')} 
-                  class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1.5 flex-shrink-0 transition-all ${
-                    subTab === 'pasados'
-                      ? 'bg-[#005a36] text-white border border-[#005a36] shadow-sm'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200'
-                  }"
-                >
-                  <span>Pasados (${matchesPast.length})</span>
+                  ${calculatingBracket 
+                    ? html`<div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>`
+                    : html`<span class="flex items-center space-x-1.5"><${Trophy} size=${12} /><span>Calcular y Actualizar Bracket</span></span>`
+                  }
                 </button>
               </div>
 

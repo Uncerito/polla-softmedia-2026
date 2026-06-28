@@ -519,6 +519,363 @@ class SupabaseRealClient {
     }));
   }
 
+  // Helper to calculate standings
+  calculateLocalStandings(matches) {
+    const groups = {};
+    matches.forEach(match => {
+      if (!match.grupo) return;
+      const gName = match.grupo;
+      if (!groups[gName]) {
+        groups[gName] = {};
+      }
+      [match.equipo_a, match.equipo_b].forEach(teamName => {
+        if (!groups[gName][teamName]) {
+          groups[gName][teamName] = {
+            equipo: teamName,
+            pj: 0,
+            pg: 0,
+            pe: 0,
+            pp: 0,
+            gf: 0,
+            gc: 0,
+            dg: 0,
+            pts: 0
+          };
+        }
+      });
+    });
+
+    matches.forEach(match => {
+      if (!match.grupo || !match.resultado) return;
+      const gName = match.grupo;
+      const teamA = match.equipo_a;
+      const teamB = match.equipo_b;
+      const statsA = groups[gName][teamA];
+      const statsB = groups[gName][teamB];
+      if (!statsA || !statsB) return;
+
+      statsA.pj += 1;
+      statsB.pj += 1;
+      const golesA = match.goles_a !== null ? Number(match.goles_a) : 0;
+      const golesB = match.goles_b !== null ? Number(match.goles_b) : 0;
+
+      statsA.gf += golesA;
+      statsA.gc += golesB;
+      statsA.dg = statsA.gf - statsA.gc;
+
+      statsB.gf += golesB;
+      statsB.gc += golesA;
+      statsB.dg = statsB.gf - statsB.gc;
+
+      if (match.resultado === 'gana_a') {
+        statsA.pg += 1;
+        statsA.pts += 3;
+        statsB.pp += 1;
+      } else if (match.resultado === 'gana_b') {
+        statsB.pg += 1;
+        statsB.pts += 3;
+        statsA.pp += 1;
+      } else if (match.resultado === 'empate') {
+        statsA.pe += 1;
+        statsA.pts += 1;
+        statsB.pe += 1;
+        statsB.pts += 1;
+      }
+    });
+
+    const sortedGroups = {};
+    Object.keys(groups).sort().forEach(gName => {
+      sortedGroups[gName] = Object.values(groups[gName]).sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        return a.equipo.localeCompare(b.equipo);
+      });
+    });
+
+    return sortedGroups;
+  }
+
+  // Lógica de cálculo y automatización del bracket mundialista
+  async calculateAndUpdateBracket() {
+    await this.init();
+
+    const BRACKET_MATCHES_DEF = [
+      // 16avos de Final (Matches 73 to 88)
+      { numero_partido: 73, fase: '16avos', equipo_a: '1º Grupo A', equipo_b: '3º Grupo C/D/E', fecha_hora: '2026-06-28T14:00:00-05:00', sede: 'Estadio Azteca', ciudad: 'Ciudad de México, MX 🇲🇽' },
+      { numero_partido: 74, fase: '16avos', equipo_a: '2º Grupo A', equipo_b: '2º Grupo B', fecha_hora: '2026-06-28T20:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
+      { numero_partido: 75, fase: '16avos', equipo_a: '1º Grupo B', equipo_b: '3º Grupo A/C/D', fecha_hora: '2026-06-29T14:00:00-05:00', sede: 'BMO Field', ciudad: 'Toronto, CA 🇨🇦' },
+      { numero_partido: 76, fase: '16avos', equipo_a: '1º Grupo C', equipo_b: '3º Grupo F/G/H', fecha_hora: '2026-06-29T17:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
+      { numero_partido: 77, fase: '16avos', equipo_a: '2º Grupo C', equipo_b: '2º Grupo D', fecha_hora: '2026-06-29T20:00:00-05:00', sede: 'Gillette Stadium', ciudad: 'Boston, US 🇺🇸' },
+      { numero_partido: 78, fase: '16avos', equipo_a: '1º Grupo D', equipo_b: '3º Grupo I/J/K', fecha_hora: '2026-06-30T14:00:00-05:00', sede: 'BC Place', ciudad: 'Vancouver, CA 🇨🇦' },
+      { numero_partido: 79, fase: '16avos', equipo_a: '1º Grupo E', equipo_b: '3º Grupo A/B/C', fecha_hora: '2026-06-30T17:00:00-05:00', sede: 'NRG Stadium', ciudad: 'Houston, US 🇺🇸' },
+      { numero_partido: 80, fase: '16avos', equipo_a: '2º Grupo E', equipo_b: '2º Grupo F', fecha_hora: '2026-06-30T20:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
+      { numero_partido: 81, fase: '16avos', equipo_a: '1º Grupo F', equipo_b: '3º Grupo I/J/L', fecha_hora: '2026-07-01T14:00:00-05:00', sede: 'Lincoln Financial Field', ciudad: 'Filadelfia, US 🇺🇸' },
+      { numero_partido: 82, fase: '16avos', equipo_a: '1º Grupo G', equipo_b: '3º Grupo J/K/L', fecha_hora: '2026-07-01T17:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
+      { numero_partido: 83, fase: '16avos', equipo_a: '2º Grupo G', equipo_b: '2º Grupo H', fecha_hora: '2026-07-01T20:00:00-05:00', sede: 'Hard Rock Stadium', ciudad: 'Miami, US 🇺🇸' },
+      { numero_partido: 84, fase: '16avos', equipo_a: '1º Grupo H', equipo_b: '3º Grupo D/E/F', fecha_hora: '2026-07-02T14:00:00-05:00', sede: 'Lumen Field', ciudad: 'Seattle, US 🇺🇸' },
+      { numero_partido: 85, fase: '16avos', equipo_a: '1º Grupo I', equipo_b: '3º Grupo G/H/I', fecha_hora: '2026-07-02T17:00:00-05:00', sede: 'Arrowhead Stadium', ciudad: 'Kansas City, US 🇺🇸' },
+      { numero_partido: 86, fase: '16avos', equipo_a: '2º Grupo I', equipo_b: '2º Grupo J', fecha_hora: '2026-07-02T20:00:00-05:00', sede: 'Levi\'s Stadium', ciudad: 'San Francisco, US 🇺🇸' },
+      { numero_partido: 87, fase: '16avos', equipo_a: '1º Grupo J', equipo_b: '3º Grupo E/F/G', fecha_hora: '2026-07-03T14:00:00-05:00', sede: 'Estadio Akron', ciudad: 'Guadalajara, MX 🇲🇽' },
+      { numero_partido: 88, fase: '16avos', equipo_a: '1º Grupo K', equipo_b: '2º Grupo L', fecha_hora: '2026-07-03T20:00:00-05:00', sede: 'Estadio BBVA', ciudad: 'Monterrey, MX 🇲🇽' },
+
+      // Octavos de Final (Matches 89 to 96)
+      { numero_partido: 89, fase: 'Octavos', equipo_a: 'Ganador M73', equipo_b: 'Ganador M74', fecha_hora: '2026-07-04T16:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
+      { numero_partido: 90, fase: 'Octavos', equipo_a: 'Ganador M75', equipo_b: 'Ganador M76', fecha_hora: '2026-07-04T21:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
+      { numero_partido: 91, fase: 'Octavos', equipo_a: 'Ganador M77', equipo_b: 'Ganador M78', fecha_hora: '2026-07-05T16:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
+      { numero_partido: 92, fase: 'Octavos', equipo_a: 'Ganador M79', equipo_b: 'Ganador M80', fecha_hora: '2026-07-05T21:00:00-05:00', sede: 'BC Place', ciudad: 'Vancouver, CA 🇨🇦' },
+      { numero_partido: 93, fase: 'Octavos', equipo_a: 'Ganador M81', equipo_b: 'Ganador M82', fecha_hora: '2026-07-06T16:00:00-05:00', sede: 'Gillette Stadium', ciudad: 'Boston, US 🇺🇸' },
+      { numero_partido: 94, fase: 'Octavos', equipo_a: 'Ganador M83', equipo_b: 'Ganador M84', fecha_hora: '2026-07-06T21:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
+      { numero_partido: 95, fase: 'Octavos', equipo_a: 'Ganador M85', equipo_b: 'Ganador M86', fecha_hora: '2026-07-07T16:00:00-05:00', sede: 'Estadio Azteca', ciudad: 'Ciudad de México, MX 🇲🇽' },
+      { numero_partido: 96, fase: 'Octavos', equipo_a: 'Ganador M87', equipo_b: 'Ganador M88', fecha_hora: '2026-07-07T21:00:00-05:00', sede: 'Hard Rock Stadium', ciudad: 'Miami, US 🇺🇸' },
+
+      // Cuartos de Final (Matches 97 to 100)
+      { numero_partido: 97, fase: 'Cuartos', equipo_a: 'Ganador M89', equipo_b: 'Ganador M90', fecha_hora: '2026-07-09T17:00:00-05:00', sede: 'Gillette Stadium', ciudad: 'Boston, US 🇺🇸' },
+      { numero_partido: 98, fase: 'Cuartos', equipo_a: 'Ganador M91', equipo_b: 'Ganador M92', fecha_hora: '2026-07-10T17:00:00-05:00', sede: 'SoFi Stadium', ciudad: 'Los Angeles, US 🇺🇸' },
+      { numero_partido: 99, fase: 'Cuartos', equipo_a: 'Ganador M93', equipo_b: 'Ganador M94', fecha_hora: '2026-07-11T17:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York, US 🇺🇸' },
+      { numero_partido: 100, fase: 'Cuartos', equipo_a: 'Ganador M95', equipo_b: 'Ganador M96', fecha_hora: '2026-07-12T17:00:00-05:00', sede: 'Arrowhead Stadium', ciudad: 'Kansas City, US 🇺🇸' },
+
+      // Semifinales (Matches 101 to 102)
+      { numero_partido: 101, fase: 'Semifinal', equipo_a: 'Ganador M97', equipo_b: 'Ganador M98', fecha_hora: '2026-07-15T19:00:00-05:00', sede: 'Mercedes-Benz Stadium', ciudad: 'Atlanta, US 🇺🇸' },
+      { numero_partido: 102, fase: 'Semifinal', equipo_a: 'Ganador M99', equipo_b: 'Ganador M100', fecha_hora: '2026-07-16T19:00:00-05:00', sede: 'AT&T Stadium', ciudad: 'Dallas, US 🇺🇸' },
+
+      // Gran Final (Match 104)
+      { numero_partido: 104, fase: 'Final', equipo_a: 'Ganador M101', equipo_b: 'Ganador M102', fecha_hora: '2026-07-19T16:00:00-05:00', sede: 'MetLife Stadium', ciudad: 'Nueva York/Nueva Jersey, US 🇺🇸' }
+    ];
+
+    // 1. Garantizar la existencia de los partidos de playoffs en la base de datos
+    const { data: existing, error: fetchError } = await this.client
+      .from('partidos')
+      .select('id, numero_partido, equipo_a, equipo_b, resultado')
+      .gte('numero_partido', 73);
+
+    if (fetchError) throw fetchError;
+
+    const existingMap = {};
+    if (existing) {
+      existing.forEach(m => {
+        existingMap[m.numero_partido] = m;
+      });
+    }
+
+    const missingMatches = BRACKET_MATCHES_DEF.filter(m => !existingMap[m.numero_partido]);
+    if (missingMatches.length > 0) {
+      const { error: insertError } = await this.client
+        .from('partidos')
+        .insert(missingMatches);
+      if (insertError) throw insertError;
+    }
+
+    // Volver a consultar para tener la lista completa real de partidos en la base de datos
+    const { data: allMatches, error: allErr } = await this.client
+      .from('partidos')
+      .select('*')
+      .order('numero_partido', { ascending: true });
+
+    if (allErr) throw allErr;
+
+    // 2. Calcular tablas de posiciones locales
+    const groupMatches = allMatches.filter(m => m.numero_partido <= 72);
+    const standings = this.calculateLocalStandings(groupMatches);
+
+    // Helper para validar si un grupo está completamente terminado
+    const isGroupComplete = (groupStandings) => {
+      const totalPj = groupStandings.reduce((sum, t) => sum + t.pj, 0);
+      return totalPj === 12; // 6 partidos por grupo * 2 equipos = 12 partidos jugados en total
+    };
+
+    const updates = {}; // mapeo: numero_partido -> { equipo_a, equipo_b }
+
+    // 3. Emparejar clasificados directos (1º y 2º) de grupos completados
+    const groupsList = ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo E', 'Grupo F', 'Grupo G', 'Grupo H', 'Grupo I', 'Grupo J', 'Grupo K', 'Grupo L'];
+    
+    // Mapeo de partidos 73-88 a sus reglas de 1º y 2º
+    const groupWinnersMapping = {
+      73: { group: 'Grupo A', pos: 1, field: 'equipo_a' },
+      74: [
+        { group: 'Grupo A', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo B', pos: 2, field: 'equipo_b' }
+      ],
+      75: { group: 'Grupo B', pos: 1, field: 'equipo_a' },
+      76: { group: 'Grupo C', pos: 1, field: 'equipo_a' },
+      77: [
+        { group: 'Grupo C', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo D', pos: 2, field: 'equipo_b' }
+      ],
+      78: { group: 'Grupo D', pos: 1, field: 'equipo_a' },
+      79: { group: 'Grupo E', pos: 1, field: 'equipo_a' },
+      80: [
+        { group: 'Grupo E', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo F', pos: 2, field: 'equipo_b' }
+      ],
+      81: { group: 'Grupo F', pos: 1, field: 'equipo_a' },
+      82: { group: 'Grupo G', pos: 1, field: 'equipo_a' },
+      83: [
+        { group: 'Grupo G', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo H', pos: 2, field: 'equipo_b' }
+      ],
+      84: { group: 'Grupo H', pos: 1, field: 'equipo_a' },
+      85: { group: 'Grupo I', pos: 1, field: 'equipo_a' },
+      86: [
+        { group: 'Grupo I', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo J', pos: 2, field: 'equipo_b' }
+      ],
+      87: { group: 'Grupo J', pos: 1, field: 'equipo_a' },
+      88: [
+        { group: 'Grupo K', pos: 1, field: 'equipo_a' },
+        { group: 'Grupo L', pos: 2, field: 'equipo_b' }
+      ]
+    };
+
+    Object.keys(groupWinnersMapping).forEach(matchNum => {
+      const num = Number(matchNum);
+      const rule = groupWinnersMapping[num];
+      
+      const applyRule = (r) => {
+        const groupSt = standings[r.group];
+        if (groupSt && isGroupComplete(groupSt)) {
+          const team = groupSt[r.pos - 1].equipo;
+          updates[num] = { ...updates[num], [r.field]: team };
+        }
+      };
+
+      if (Array.isArray(rule)) {
+        rule.forEach(applyRule);
+      } else {
+        applyRule(rule);
+      }
+    });
+
+    // 4. Si TODOS los grupos están terminados, calcular los 8 mejores terceros y distribuirlos
+    const allCompleted = groupsList.every(g => standings[g] && isGroupComplete(standings[g]));
+    if (allCompleted) {
+      const thirdPlaces = groupsList.map(g => ({
+        group: g,
+        ...standings[g][2]
+      }));
+      
+      // Ordenar terceros según criterios FIFA
+      thirdPlaces.sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        return a.equipo.localeCompare(b.equipo);
+      });
+
+      const best8Thirds = thirdPlaces.slice(0, 8);
+
+      const slots = [
+        { num: 73, allowed: ['Grupo C', 'Grupo D', 'Grupo E'], winner: 'Grupo A' },
+        { num: 75, allowed: ['Grupo A', 'Grupo C', 'Grupo D'], winner: 'Grupo B' },
+        { num: 76, allowed: ['Grupo F', 'Grupo G', 'Grupo H'], winner: 'Grupo C' },
+        { num: 78, allowed: ['Grupo I', 'Grupo J', 'Grupo K'], winner: 'Grupo D' },
+        { num: 79, allowed: ['Grupo A', 'Grupo B', 'Grupo C'], winner: 'Grupo E' },
+        { num: 81, allowed: ['Grupo I', 'Grupo J', 'Grupo L'], winner: 'Grupo F' },
+        { num: 82, allowed: ['Grupo J', 'Grupo K', 'Grupo L'], winner: 'Grupo G' },
+        { num: 84, allowed: ['Grupo D', 'Grupo E', 'Grupo F'], winner: 'Grupo H' },
+        { num: 85, allowed: ['Grupo G', 'Grupo H', 'Grupo I'], winner: 'Grupo I' },
+        { num: 87, allowed: ['Grupo E', 'Grupo F', 'Grupo G'], winner: 'Grupo J' }
+      ];
+
+      // Algoritmo de backtracking para asignación balanceada de terceros clasificados
+      const assignThirds = (teams, currentSlots, assignment = {}) => {
+        if (teams.length === 0) return assignment;
+        const team = teams[0];
+        const restTeams = teams.slice(1);
+
+        for (let i = 0; i < currentSlots.length; i++) {
+          const slot = currentSlots[i];
+          if (slot.allowed.includes(team.group) && slot.winner !== team.group) {
+            const nextSlots = currentSlots.filter(s => s.num !== slot.num);
+            const result = assignThirds(restTeams, nextSlots, { ...assignment, [slot.num]: team.equipo });
+            if (result) return result;
+          }
+        }
+        return null;
+      };
+
+      const thirdAssignments = assignThirds(best8Thirds, slots);
+      if (thirdAssignments) {
+        Object.keys(thirdAssignments).forEach(matchNum => {
+          const num = Number(matchNum);
+          updates[num] = { ...updates[num], equipo_b: thirdAssignments[num] };
+        });
+      }
+    }
+
+    // 5. Progresar ganadores para llaves eliminatorias de Octavos en adelante
+    const getMatchWinner = (matchNum, currentMatches) => {
+      const match = currentMatches.find(m => m.numero_partido === matchNum);
+      if (!match || match.resultado === null || match.resultado === '') return null;
+      return match.resultado === 'gana_a' ? match.equipo_a : match.equipo_b;
+    };
+
+    const knockoutProgressions = [
+      // Octavos
+      { num: 89, source_a: 73, source_b: 74 },
+      { num: 90, source_a: 75, source_b: 76 },
+      { num: 91, source_a: 77, source_b: 78 },
+      { num: 92, source_a: 79, source_b: 80 },
+      { num: 93, source_a: 81, source_b: 82 },
+      { num: 94, source_a: 83, source_b: 84 },
+      { num: 95, source_a: 85, source_b: 86 },
+      { num: 96, source_a: 87, source_b: 88 },
+      // Cuartos
+      { num: 97, source_a: 89, source_b: 90 },
+      { num: 98, source_a: 91, source_b: 92 },
+      { num: 99, source_a: 93, source_b: 94 },
+      { num: 100, source_a: 95, source_b: 96 },
+      // Semifinales
+      { num: 101, source_a: 97, source_b: 98 },
+      { num: 102, source_a: 99, source_b: 100 },
+      // Final
+      { num: 104, source_a: 101, source_b: 102 }
+    ];
+
+    knockoutProgressions.forEach(prog => {
+      const winnerA = getMatchWinner(prog.source_a, allMatches);
+      const winnerB = getMatchWinner(prog.source_b, allMatches);
+      
+      if (winnerA) {
+        updates[prog.num] = { ...updates[prog.num], equipo_a: winnerA };
+      }
+      if (winnerB) {
+        updates[prog.num] = { ...updates[prog.num], equipo_b: winnerB };
+      }
+    });
+
+    // 6. Aplicar actualizaciones en lote
+    const updatePromises = Object.keys(updates).map(matchNum => {
+      const num = Number(matchNum);
+      const updateObj = updates[num];
+      const match = allMatches.find(m => m.numero_partido === num);
+      if (!match) return Promise.resolve();
+
+      const payload = {};
+      let changed = false;
+
+      if (updateObj.equipo_a !== undefined && match.equipo_a !== updateObj.equipo_a) {
+        payload.equipo_a = updateObj.equipo_a;
+        changed = true;
+      }
+      if (updateObj.equipo_b !== undefined && match.equipo_b !== updateObj.equipo_b) {
+        payload.equipo_b = updateObj.equipo_b;
+        changed = true;
+      }
+
+      if (changed) {
+        return this.client
+          .from('partidos')
+          .update(payload)
+          .eq('id', match.id);
+      }
+      return Promise.resolve();
+    });
+
+    await Promise.all(updatePromises);
+    return { success: true };
+  }
+
   // Obtener lista completa de usuarios (Vista exclusiva del Administrador)
   async getUsuariosAdmin() {
     await this.init();
