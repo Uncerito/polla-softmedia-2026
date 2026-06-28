@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import * as Lucide from 'lucide-react';
-import { getFlagUrl } from './utils.js';
+import { getFlagUrl } from './utils.js?v=1.1.0';
 
 const html = htm.bind(React.createElement);
 const { Trophy, ChevronLeft, ChevronRight } = Lucide;

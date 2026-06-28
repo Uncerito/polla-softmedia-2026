@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import * as Lucide from 'lucide-react';
 import { db } from '../supabase.js';
-import { getFlagUrl, isPlaceholderTeam } from './utils.js';
-import { MatchCard } from './MatchCard.js';
+import { getFlagUrl, isPlaceholderTeam } from './utils.js?v=1.1.0';
+import { MatchCard } from './MatchCard.js?v=1.1.0';
 
 const html = htm.bind(React.createElement);
 const { Clock, Star, Shield, Calendar, Trophy, AlertCircle, Users, Edit, Check, BarChart3, ChevronDown } = Lucide;

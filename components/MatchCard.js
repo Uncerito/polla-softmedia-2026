@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import { MapPin } from 'lucide-react';
-import { getFlagUrl, isPlaceholderTeam } from './utils.js';
+import { getFlagUrl, isPlaceholderTeam } from './utils.js?v=1.1.0';
 
 const html = htm.bind(React.createElement);
 
