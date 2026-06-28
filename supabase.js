@@ -691,39 +691,45 @@ class SupabaseRealClient {
     
     // Mapeo de partidos 73-88 a sus reglas de 1º y 2º
     const groupWinnersMapping = {
-      73: { group: 'Grupo A', pos: 1, field: 'equipo_a' },
-      74: [
+      73: [
         { group: 'Grupo A', pos: 2, field: 'equipo_a' },
         { group: 'Grupo B', pos: 2, field: 'equipo_b' }
       ],
-      75: { group: 'Grupo B', pos: 1, field: 'equipo_a' },
-      76: { group: 'Grupo C', pos: 1, field: 'equipo_a' },
-      77: [
-        { group: 'Grupo C', pos: 2, field: 'equipo_a' },
-        { group: 'Grupo D', pos: 2, field: 'equipo_b' }
+      74: { group: 'Grupo E', pos: 1, field: 'equipo_a' },
+      75: [
+        { group: 'Grupo F', pos: 1, field: 'equipo_a' },
+        { group: 'Grupo C', pos: 2, field: 'equipo_b' }
       ],
-      78: { group: 'Grupo D', pos: 1, field: 'equipo_a' },
-      79: { group: 'Grupo E', pos: 1, field: 'equipo_a' },
-      80: [
-        { group: 'Grupo E', pos: 2, field: 'equipo_a' },
+      76: [
+        { group: 'Grupo C', pos: 1, field: 'equipo_a' },
         { group: 'Grupo F', pos: 2, field: 'equipo_b' }
       ],
-      81: { group: 'Grupo F', pos: 1, field: 'equipo_a' },
+      77: { group: 'Grupo I', pos: 1, field: 'equipo_a' },
+      78: [
+        { group: 'Grupo E', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo I', pos: 2, field: 'equipo_b' }
+      ],
+      79: { group: 'Grupo A', pos: 1, field: 'equipo_a' },
+      80: { group: 'Grupo L', pos: 1, field: 'equipo_a' },
+      81: { group: 'Grupo D', pos: 1, field: 'equipo_a' },
       82: { group: 'Grupo G', pos: 1, field: 'equipo_a' },
       83: [
-        { group: 'Grupo G', pos: 2, field: 'equipo_a' },
-        { group: 'Grupo H', pos: 2, field: 'equipo_b' }
+        { group: 'Grupo K', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo L', pos: 2, field: 'equipo_b' }
       ],
-      84: { group: 'Grupo H', pos: 1, field: 'equipo_a' },
-      85: { group: 'Grupo I', pos: 1, field: 'equipo_a' },
-      86: [
-        { group: 'Grupo I', pos: 2, field: 'equipo_a' },
+      84: [
+        { group: 'Grupo H', pos: 1, field: 'equipo_a' },
         { group: 'Grupo J', pos: 2, field: 'equipo_b' }
       ],
-      87: { group: 'Grupo J', pos: 1, field: 'equipo_a' },
+      85: { group: 'Grupo B', pos: 1, field: 'equipo_a' },
+      86: [
+        { group: 'Grupo J', pos: 1, field: 'equipo_a' },
+        { group: 'Grupo H', pos: 2, field: 'equipo_b' }
+      ],
+      87: { group: 'Grupo K', pos: 1, field: 'equipo_a' },
       88: [
-        { group: 'Grupo K', pos: 1, field: 'equipo_a' },
-        { group: 'Grupo L', pos: 2, field: 'equipo_b' }
+        { group: 'Grupo D', pos: 2, field: 'equipo_a' },
+        { group: 'Grupo G', pos: 2, field: 'equipo_b' }
       ]
     };
 
@@ -765,16 +771,14 @@ class SupabaseRealClient {
       const best8Thirds = thirdPlaces.slice(0, 8);
 
       const slots = [
-        { num: 73, allowed: ['Grupo C', 'Grupo D', 'Grupo E'], winner: 'Grupo A' },
-        { num: 75, allowed: ['Grupo A', 'Grupo C', 'Grupo D'], winner: 'Grupo B' },
-        { num: 76, allowed: ['Grupo F', 'Grupo G', 'Grupo H'], winner: 'Grupo C' },
-        { num: 78, allowed: ['Grupo I', 'Grupo J', 'Grupo K'], winner: 'Grupo D' },
-        { num: 79, allowed: ['Grupo A', 'Grupo B', 'Grupo C'], winner: 'Grupo E' },
-        { num: 81, allowed: ['Grupo I', 'Grupo J', 'Grupo L'], winner: 'Grupo F' },
-        { num: 82, allowed: ['Grupo J', 'Grupo K', 'Grupo L'], winner: 'Grupo G' },
-        { num: 84, allowed: ['Grupo D', 'Grupo E', 'Grupo F'], winner: 'Grupo H' },
-        { num: 85, allowed: ['Grupo G', 'Grupo H', 'Grupo I'], winner: 'Grupo I' },
-        { num: 87, allowed: ['Grupo E', 'Grupo F', 'Grupo G'], winner: 'Grupo J' }
+        { num: 74, allowed: ['Grupo A', 'Grupo B', 'Grupo C', 'Grupo D', 'Grupo F'], winner: 'Grupo E' },
+        { num: 77, allowed: ['Grupo C', 'Grupo D', 'Grupo F', 'Grupo G', 'Grupo H'], winner: 'Grupo I' },
+        { num: 79, allowed: ['Grupo C', 'Grupo E', 'Grupo F', 'Grupo H', 'Grupo I'], winner: 'Grupo A' },
+        { num: 80, allowed: ['Grupo E', 'Grupo H', 'Grupo I', 'Grupo J', 'Grupo K'], winner: 'Grupo L' },
+        { num: 81, allowed: ['Grupo B', 'Grupo E', 'Grupo F', 'Grupo I', 'Grupo J'], winner: 'Grupo D' },
+        { num: 82, allowed: ['Grupo A', 'Grupo E', 'Grupo H', 'Grupo I', 'Grupo J'], winner: 'Grupo G' },
+        { num: 85, allowed: ['Grupo E', 'Grupo F', 'Grupo G', 'Grupo I', 'Grupo J'], winner: 'Grupo B' },
+        { num: 87, allowed: ['Grupo D', 'Grupo E', 'Grupo I', 'Grupo J', 'Grupo L'], winner: 'Grupo K' }
       ];
 
       // Algoritmo de backtracking para asignación balanceada de terceros clasificados
@@ -812,18 +816,18 @@ class SupabaseRealClient {
 
     const knockoutProgressions = [
       // Octavos
-      { num: 89, source_a: 73, source_b: 74 },
-      { num: 90, source_a: 75, source_b: 76 },
-      { num: 91, source_a: 77, source_b: 78 },
+      { num: 89, source_a: 73, source_b: 75 },
+      { num: 90, source_a: 74, source_b: 77 },
+      { num: 91, source_a: 76, source_b: 78 },
       { num: 92, source_a: 79, source_b: 80 },
-      { num: 93, source_a: 81, source_b: 82 },
-      { num: 94, source_a: 83, source_b: 84 },
-      { num: 95, source_a: 85, source_b: 86 },
-      { num: 96, source_a: 87, source_b: 88 },
+      { num: 93, source_a: 83, source_b: 84 },
+      { num: 94, source_a: 81, source_b: 82 },
+      { num: 95, source_a: 86, source_b: 88 },
+      { num: 96, source_a: 85, source_b: 87 },
       // Cuartos
       { num: 97, source_a: 89, source_b: 90 },
-      { num: 98, source_a: 91, source_b: 92 },
-      { num: 99, source_a: 93, source_b: 94 },
+      { num: 98, source_a: 93, source_b: 94 },
+      { num: 99, source_a: 91, source_b: 92 },
       { num: 100, source_a: 95, source_b: 96 },
       // Semifinales
       { num: 101, source_a: 97, source_b: 98 },

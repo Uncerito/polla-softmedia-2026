@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Diagnóstico de Base de Datos - Polla SoftMedia</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; background: #f8fafc; color: #0f172a; }
+    h1 { font-size: 20px; margin-bottom: 20px; color: #005a36; }
+    table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+    th { background: #f1f5f9; font-weight: bold; }
+    .btn { background: #005a36; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+    .btn:hover { background: #004d30; }
+    pre { background: #0f172a; color: #38bdf8; padding: 15px; border-radius: 6px; font-size: 12px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Diagnóstico de Partidos Playoffs (73-88)</h1>
+  <button class="btn" onclick="ejecutarCalculo()">Forzar Sincronización Directa de Fechas</button>
+  <p id="status" style="font-weight: bold; color: #005a36;"></p>
+  
+  <table id="tabla-partidos">
+    <thead>
+      <tr>
+        <th>Partido #</th>
+        <th>Fase</th>
+        <th>Equipo A</th>
+        <th>Equipo B</th>
+        <th>Fecha/Hora (BD)</th>
+        <th>Sede</th>
+        <th>Ciudad</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="7">Cargando partidos...</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Log de Operaciones</h3>
+  <pre id="log">Inicializando...</pre>
+
+  <script type="module">
+    import { db } from './supabase.js?v=1.2.2';
+
+    const log = document.getElementById('log');
+    function printLog(text) {
+      log.textContent += '\n' + text;
+    }
+
+    async function cargarPartidos() {
+      try {
+        printLog('Conectando a Supabase...');
+        await db.init();
+        const { data: matches, error } = await db.client
+          .from('partidos')
+          .select('*')
+          .gte('numero_partido', 73)
+          .lte('numero_partido', 88)
+          .order('numero_partido', { ascending: true });
+
+        if (error) throw error;
+
+        printLog(`Partidos cargados con éxito: ${matches.length} encontrados.`);
+        const tbody = document.querySelector('#tabla-partidos tbody');
+        tbody.innerHTML = '';
+
+        matches.forEach(m => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><b>#${m.numero_partido}</b></td>
+            <td>${m.fase}</td>
+            <td>${m.equipo_a}</td>
+            <td>${m.equipo_b}</td>
+            <td>${m.fecha_hora}</td>
+            <td>${m.sede}</td>
+            <td>${m.ciudad}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        printLog('ERROR CARGANDO PARTIDOS: ' + err.message);
+        console.error(err);
+      }
+    }
+
+    window.ejecutarCalculo = async () => {
+      const status = document.getElementById('status');
+      status.textContent = 'Procesando actualización y sincronización...';
+      try {
+        printLog('Iniciando cálculo y sincronización de bracket...');
+        const res = await db.calculateAndUpdateBracket();
+        printLog('Resultado del backend: ' + JSON.stringify(res));
+        status.textContent = '¡Sincronización completada con éxito!';
+        await cargarPartidos();
+      } catch (err) {
+        printLog('ERROR AL ACTUALIZAR: ' + err.message);
+        status.textContent = 'Error al actualizar. Ver log.';
+      }
+    };
+
+    cargarPartidos();
+  </script>
+</body>
+</html>

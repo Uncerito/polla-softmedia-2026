@@ -11,7 +11,7 @@ import { AdminView } from './components/AdminView.js?v=1.2.0';
 import { GroupStandingsView } from './components/GroupStandingsView.js?v=1.1.0';
 import { StatsView } from './components/StatsView.js?v=1.1.0';
 import { RulesView } from './components/RulesView.js?v=1.1.0';
-import { BracketView } from './components/BracketView.js?v=1.1.0';
+import { BracketView } from './components/BracketView.js?v=1.2.0';
 
 const html = htm.bind(React.createElement);
 
