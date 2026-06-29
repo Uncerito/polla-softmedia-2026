@@ -201,13 +201,14 @@ class SupabaseRealClient {
         prediccion_usuario: pronostico ? pronostico.prediccion : null,
         pronostico_goles_a: pronostico ? pronostico.goles_a : null,
         pronostico_goles_b: pronostico ? pronostico.goles_b : null,
+        pronostico_penales: pronostico ? pronostico.prediccion_penales : null,
         puntos_pronostico: pronostico ? pronostico.puntos_ganados : 0
       };
     });
   }
 
   // Guardar o modificar un pronóstico (Con validación estricta de tiempo de Lima y goles)
-  async savePrediction(userId, partidoId, golesA, golesB) {
+  async savePrediction(userId, partidoId, golesA, golesB, prediccionPenales = null) {
     await this.init();
     
     const { data: partido, error: ep } = await this.client
@@ -246,6 +247,7 @@ class SupabaseRealClient {
           prediccion,
           goles_a: Number(golesA),
           goles_b: Number(golesB),
+          prediccion_penales: prediccion === 'empate' ? prediccionPenales : null,
           creado_en: new Date().toISOString()
         })
         .eq('id', existente.id);
@@ -258,7 +260,8 @@ class SupabaseRealClient {
           partido_id: partidoId,
           prediccion,
           goles_a: Number(golesA),
-          goles_b: Number(golesB)
+          goles_b: Number(golesB),
+          prediccion_penales: prediccion === 'empate' ? prediccionPenales : null
         });
       if (error) throw error;
     }
@@ -785,7 +788,7 @@ class SupabaseRealClient {
   }
 
   // Actualizar los goles oficiales de un partido (Acción de Administrador)
-  async updateMatchGoals(partidoId, golesA, golesB) {
+  async updateMatchGoals(partidoId, golesA, golesB, ganadorPenales = null) {
     await this.init();
     
     let resultado = null;
@@ -806,7 +809,8 @@ class SupabaseRealClient {
       .update({ 
         goles_a: golesA === '' || golesA === null ? null : Number(golesA), 
         goles_b: golesB === '' || golesB === null ? null : Number(golesB),
-        resultado: resultado
+        resultado: resultado,
+        ganador_penales: resultado === 'empate' ? ganadorPenales : null
       })
       .eq('id', partidoId);
 

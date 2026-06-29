@@ -37,6 +37,7 @@ const formatDateForInput = (isoString) => {
 export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating }) {
   const [golesA, setGolesA] = useState(partido.goles_a !== null ? String(partido.goles_a) : '');
   const [golesB, setGolesB] = useState(partido.goles_b !== null ? String(partido.goles_b) : '');
+  const [ganadorPenales, setGanadorPenales] = useState(partido.ganador_penales || '');
 
   // Info editing states
   const [isEditingInfo, setIsEditingInfo] = useState(false);
@@ -47,7 +48,8 @@ export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating
   useEffect(() => {
     setGolesA(partido.goles_a !== null ? String(partido.goles_a) : '');
     setGolesB(partido.goles_b !== null ? String(partido.goles_b) : '');
-  }, [partido.goles_a, partido.goles_b]);
+    setGanadorPenales(partido.ganador_penales || '');
+  }, [partido.goles_a, partido.goles_b, partido.ganador_penales]);
 
   useEffect(() => {
     setEditEquipoA(partido.equipo_a);
@@ -57,19 +59,28 @@ export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating
 
   const handleSave = () => {
     if (golesA === '' && golesB === '') {
-      onUpdateGoals(partido.id, null, null);
+      onUpdateGoals(partido.id, null, null, null);
       return;
     }
     if (golesA === '' || golesB === '') {
       alert('Por favor, ingresa los goles para ambos equipos o deja ambos campos vacíos para limpiar el marcador.');
       return;
     }
-    onUpdateGoals(partido.id, golesA, golesB);
+    
+    const isEmpate = Number(golesA) === Number(golesB);
+    const requiresPenales = isEmpate && partido.fase !== 'Grupos';
+    
+    if (requiresPenales && !ganadorPenales) {
+      alert('Por favor, selecciona quién ganó por penales en este partido empatado de fase eliminatoria.');
+      return;
+    }
+    
+    onUpdateGoals(partido.id, golesA, golesB, requiresPenales ? ganadorPenales : null);
   };
 
   const handleClear = () => {
     if (confirm(`¿Estás seguro de que deseas eliminar el marcador oficial de ${partido.equipo_a} vs ${partido.equipo_b}? Esto restablecerá el partido a pendiente y recalculará todos los puntos.`)) {
-      onUpdateGoals(partido.id, null, null);
+      onUpdateGoals(partido.id, null, null, null);
     }
   };
 
@@ -210,6 +221,22 @@ export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating
                 />
               </div>
               
+              ${golesA !== '' && golesB !== '' && Number(golesA) === Number(golesB) && partido.fase !== 'Grupos' ? html`
+                <div class="flex flex-col text-left">
+                  <label class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Ganador PK</label>
+                  <select 
+                    value=${ganadorPenales} 
+                    onChange=${e => setGanadorPenales(e.target.value)}
+                    disabled=${isUpdating}
+                    class="bg-white border border-slate-300 rounded px-2 py-1 text-[11px] font-bold outline-none text-slate-800 h-8 flex items-center justify-center min-w-[120px]"
+                  >
+                    <option value="">Seleccionar...</option>
+                    <option value="gana_a">${partido.equipo_a}</option>
+                    <option value="gana_b">${partido.equipo_b}</option>
+                  </select>
+                </div>
+              ` : null}
+              
               <div class="flex items-center space-x-2">
                 <button 
                   disabled=${isUpdating} 
@@ -312,10 +339,10 @@ export function AdminView({ adminUsers, fixture, onRefresh, addToast }) {
     }
   };
 
-  const handleUpdateGoals = async (partidoId, golesA, golesB) => {
+  const handleUpdateGoals = async (partidoId, golesA, golesB, ganadorPenales = null) => {
     setUpdatingMatch(partidoId);
     try {
-      await db.updateMatchGoals(partidoId, golesA, golesB);
+      await db.updateMatchGoals(partidoId, golesA, golesB, ganadorPenales);
       addToast('Marcador oficial actualizado. ¡Puntos recalculados!');
       onRefresh();
     } catch (err) {

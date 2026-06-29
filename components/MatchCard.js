@@ -65,6 +65,8 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
   const [isOpen, setIsOpen] = useState(true);
   const [userGolesA, setUserGolesA] = useState('');
   const [userGolesB, setUserGolesB] = useState('');
+  const [showPenalesModal, setShowPenalesModal] = useState(false);
+  const [userPenales, setUserPenales] = useState(partido.pronostico_penales || '');
 
   const horaInicio = new Date(partido.fecha_hora).getTime();
 
@@ -97,7 +99,8 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
   useEffect(() => {
     setUserGolesA(partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined ? String(partido.pronostico_goles_a) : '');
     setUserGolesB(partido.pronostico_goles_b !== null && partido.pronostico_goles_b !== undefined ? String(partido.pronostico_goles_b) : '');
-  }, [partido.pronostico_goles_a, partido.pronostico_goles_b]);
+    setUserPenales(partido.pronostico_penales || '');
+  }, [partido.pronostico_goles_a, partido.pronostico_goles_b, partido.pronostico_penales]);
 
   const fecha = new Date(partido.fecha_hora);
   const charA = getTeamCharacter(partido.equipo_a);
@@ -111,7 +114,18 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
     partido.pronostico_goles_b !== null &&
     partido.pronostico_goles_b !== undefined &&
     String(partido.pronostico_goles_a) === String(userGolesA) &&
-    String(partido.pronostico_goles_b) === String(userGolesB);
+    String(partido.pronostico_goles_b) === String(userGolesB) &&
+    (Number(userGolesA) === Number(userGolesB) && partido.fase !== 'Grupos'
+      ? (partido.pronostico_penales !== null && partido.pronostico_penales !== undefined && partido.pronostico_penales === userPenales)
+      : true);
+
+  const handleSaveClick = () => {
+    if (userGolesA !== '' && userGolesB !== '' && Number(userGolesA) === Number(userGolesB) && partido.fase !== 'Grupos') {
+      setShowPenalesModal(true);
+    } else {
+      onPredict(userGolesA, userGolesB, null);
+    }
+  };
 
   // Formateo de fecha y hora estilo maqueta
   const dateStr = fecha.toLocaleDateString('es-PE', {
@@ -227,16 +241,40 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
                   <!-- Partido Finalizado (Resultado Oficial vs Pronóstico) -->
                   <div class="flex flex-col space-y-1 w-full bg-black/30 border border-white/10 p-2 rounded-xl text-[10px]">
                     <div class="flex items-center justify-between px-1">
-                      <div class="text-slate-400 font-bold">TU APUESTA: <span class="text-white font-black">${partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined ? `${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}` : 'Ninguna'}</span></div>
-                      <div class="text-slate-400 font-bold">OFICIAL: <span class="text-[#8efad4] font-black">${partido.goles_a} - ${partido.goles_b}</span></div>
+                      <div class="text-slate-400 font-bold">
+                        TU APUESTA: 
+                        <span class="text-white font-black">
+                          ${partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined 
+                            ? html`
+                                ${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}
+                                ${partido.pronostico_penales 
+                                  ? ` (${partido.pronostico_penales === 'gana_a' ? partido.equipo_a : partido.equipo_b} PK)` 
+                                  : ''}
+                              `
+                            : 'Ninguna'}
+                        </span>
+                      </div>
+                      <div class="text-slate-400 font-bold">
+                        OFICIAL: 
+                        <span class="text-[#8efad4] font-black">
+                          ${partido.goles_a} - ${partido.goles_b}
+                          ${partido.ganador_penales 
+                            ? ` (${partido.ganador_penales === 'gana_a' ? partido.equipo_a : partido.equipo_b} PK)` 
+                            : ''}
+                        </span>
+                      </div>
                     </div>
                     <div class="h-px bg-white/5 my-1"></div>
                     <div class="flex items-center justify-center font-black uppercase tracking-wider ${partido.puntos_pronostico > 0 ? 'text-[#8efad4]' : 'text-rose-400'}">
-                      ${partido.puntos_pronostico === 2 
-                        ? '✓ ¡Score Exacto! (+2 Pts)' 
-                        : partido.puntos_pronostico === 1 
-                          ? '✓ Acertado (+1 Pts)' 
-                          : '✗ No Acertado (0 Pts)'}
+                      ${partido.puntos_pronostico === 3 
+                        ? '✓ ¡Score Exacto + Penales! (+3 Pts)'
+                        : partido.puntos_pronostico === 2 
+                          ? (partido.resultado === 'empate' && partido.ganador_penales && partido.pronostico_penales === partido.ganador_penales 
+                              ? '✓ Empate + Penales (+2 Pts)' 
+                              : '✓ ¡Score Exacto! (+2 Pts)')
+                          : partido.puntos_pronostico === 1 
+                            ? '✓ Acertado (+1 Pts)' 
+                            : '✗ No Acertado (0 Pts)'}
                     </div>
                   </div>
                 `
@@ -248,7 +286,20 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
                       <span class="text-[9px] font-bold text-slate-450 uppercase tracking-wider">Tu Apuesta:</span>
                       <span class="text-xs font-black text-white">
                         ${partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined 
-                          ? `${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}` 
+                          ? html`
+                              ${partido.pronostico_goles_a} - ${partido.pronostico_goles_b}
+                              ${partido.pronostico_penales 
+                                ? html`
+                                    <span 
+                                      onClick=${() => { if (!isLocked) setShowPenalesModal(true); }}
+                                      class="text-[9px] text-amber-450 ml-1.5 font-bold cursor-pointer underline hover:text-amber-300"
+                                      title="Cambiar predicción de penales"
+                                    >
+                                      (${partido.pronostico_penales === 'gana_a' ? partido.equipo_a : partido.equipo_b} PK)
+                                    </span>
+                                  ` 
+                                : ''}
+                            `
                           : 'Sin pronóstico'}
                       </span>
                     </div>
@@ -257,7 +308,7 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
                       ? html`
                           <button 
                             disabled=${isSaving || userGolesA === '' || userGolesB === '' || isSavedUnchanged} 
-                            onClick=${() => onPredict(userGolesA, userGolesB)} 
+                            onClick=${handleSaveClick} 
                             class="py-1 px-3.5 rounded-lg text-[10px] font-black uppercase transition-all bg-[#22c55e] hover:bg-[#16a34a] border border-[#22c55e] text-black disabled:opacity-40 disabled:bg-white/10 disabled:border-white/10 disabled:text-slate-400 tracking-wider h-7 flex items-center justify-center cursor-pointer select-none"
                           >
                             ${isSavedUnchanged ? 'Listo ✓' : 'Guardar'}
@@ -289,6 +340,44 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
         `}
 
       </div>
+
+      <!-- Modal de Selección de Penales -->
+      ${showPenalesModal && html`
+        <div class="fixed inset-0 bg-black/85 flex items-center justify-center z-[100] p-4 animate-fade-in backdrop-blur-sm">
+          <div class="bg-[#111827] border border-slate-700/80 rounded-2xl p-5 max-w-sm w-full text-center space-y-4 shadow-2xl relative">
+            <h3 class="text-xs font-black font-outfit uppercase tracking-widest text-[#22c55e]">Definición por Penales</h3>
+            <p class="text-[11px] text-slate-350 leading-relaxed font-semibold">
+              Has pronosticado un empate en un partido de fase eliminatoria (${partido.fase}). ¿Quién se clasificará por penales?
+            </p>
+            
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <button 
+                onClick=${() => { onPredict(userGolesA, userGolesB, 'gana_a'); setShowPenalesModal(false); }}
+                class="bg-white/5 border border-white/10 hover:border-[#22c55e] p-3 rounded-xl flex flex-col items-center space-y-2 transition-all cursor-pointer group"
+              >
+                <img src=${getFlagUrl(partido.equipo_a)} class="w-10 h-6.5 rounded object-cover shadow-md" alt=${partido.equipo_a} />
+                <span class="text-[10px] font-bold text-white group-hover:text-[#22c55e] truncate max-w-full">${partido.equipo_a}</span>
+              </button>
+
+              <button 
+                onClick=${() => { onPredict(userGolesA, userGolesB, 'gana_b'); setShowPenalesModal(false); }}
+                class="bg-white/5 border border-white/10 hover:border-[#22c55e] p-3 rounded-xl flex flex-col items-center space-y-2 transition-all cursor-pointer group"
+              >
+                <img src=${getFlagUrl(partido.equipo_b)} class="w-10 h-6.5 rounded object-cover shadow-md" alt=${partido.equipo_b} />
+                <span class="text-[10px] font-bold text-white group-hover:text-[#22c55e] truncate max-w-full">${partido.equipo_b}</span>
+              </button>
+            </div>
+
+            <button 
+              onClick=${() => setShowPenalesModal(false)}
+              class="text-[9px] text-slate-450 hover:text-white uppercase font-bold tracking-wider pt-1 block mx-auto transition-colors cursor-pointer"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      `}
+
     </div>
   `;
 }

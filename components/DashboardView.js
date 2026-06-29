@@ -16,10 +16,10 @@ export function DashboardView({
   const [selectedJornada, setSelectedJornada] = useState('Todas');
   const [savingPrediction, setSavingPrediction] = useState(null);
 
-  const handlePredict = async (partidoId, golesA, golesB) => {
+  const handlePredict = async (partidoId, golesA, golesB, prediccionPenales = null) => {
     setSavingPrediction(partidoId);
     try {
-      await db.savePrediction(session.user.id, partidoId, golesA, golesB);
+      await db.savePrediction(session.user.id, partidoId, golesA, golesB, prediccionPenales);
       await onSavePrediction();
       addToast('¡Predicción guardada!');
     } catch (err) {
@@ -208,7 +208,7 @@ export function DashboardView({
                           key=${partido.id} 
                           partido=${partido} 
                           isSaving=${savingPrediction === partido.id} 
-                          onPredict=${(golesA, golesB) => handlePredict(partido.id, golesA, golesB)} 
+                          onPredict=${(golesA, golesB, prediccionPenales) => handlePredict(partido.id, golesA, golesB, prediccionPenales)} 
                         />
                       `)}
                     </div>

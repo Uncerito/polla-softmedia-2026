@@ -101,6 +101,7 @@ CREATE TABLE public.partidos (
     goles_a        INT,
     goles_b        INT,
     resultado      VARCHAR(10) CHECK (resultado IN ('gana_a', 'gana_b', 'empate')),
+    ganador_penales VARCHAR(10) CHECK (ganador_penales IN ('gana_a', 'gana_b')),
     creado_en      TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
 
@@ -135,6 +136,7 @@ CREATE TABLE public.pronosticos (
     prediccion     VARCHAR(10) NOT NULL CHECK (prediccion IN ('gana_a', 'gana_b', 'empate')),
     goles_a        INT,
     goles_b        INT,
+    prediccion_penales VARCHAR(10) CHECK (prediccion_penales IN ('gana_a', 'gana_b')),
     puntos_ganados INT NOT NULL DEFAULT 0,
     creado_en      TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
     UNIQUE(usuario_id, partido_id)
@@ -187,9 +189,10 @@ BEGIN
         OLD.resultado IS DISTINCT FROM NEW.resultado
         OR OLD.goles_a IS DISTINCT FROM NEW.goles_a
         OR OLD.goles_b IS DISTINCT FROM NEW.goles_b
+        OR OLD.ganador_penales IS DISTINCT FROM NEW.ganador_penales
     ) THEN
         FOR r IN
-            SELECT id, usuario_id, prediccion, goles_a, goles_b, puntos_ganados
+            SELECT id, usuario_id, prediccion, goles_a, goles_b, prediccion_penales, puntos_ganados
             FROM public.pronosticos
             WHERE partido_id = NEW.id
         LOOP
@@ -199,6 +202,13 @@ BEGIN
                 puntos_nuevos := 1;
                 IF r.goles_a = NEW.goles_a AND r.goles_b = NEW.goles_b THEN
                     puntos_nuevos := 2;
+                END IF;
+
+                -- Bonificación por penales en caso de empate (+1 punto)
+                IF NEW.resultado = 'empate' 
+                   AND NEW.ganador_penales IS NOT NULL 
+                   AND r.prediccion_penales = NEW.ganador_penales THEN
+                    puntos_nuevos := puntos_nuevos + 1;
                 END IF;
             ELSE
                 puntos_nuevos := 0;
@@ -220,7 +230,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TRIGGER trigger_actualizar_puntos_partido
-    AFTER UPDATE OF resultado, goles_a, goles_b ON public.partidos
+    AFTER UPDATE OF resultado, goles_a, goles_b, ganador_penales ON public.partidos
     FOR EACH ROW EXECUTE FUNCTION public.calcular_puntos_pronostico();
 
 -- ====================================================================
