@@ -222,13 +222,18 @@ export function LeaderboardView({ leaderboard, session }) {
                     <span class="text-[8px] font-bold text-slate-550 uppercase tracking-wider mb-1">Últimos Pronósticos</span>
                     <div class="flex flex-col space-y-1.5 w-full">
                       ${user.ultimos_pronosticos.map((item) => {
-                        const titleText = `${item.equipo_a} vs ${item.equipo_b} ${item.goles_a_oficial !== null ? `(Oficial: ${item.goles_a_oficial}-${item.goles_b_oficial})` : '(Pendiente)'}`;
+                        const predPenalesText = item.prediccion_penales ? ` (${item.prediccion_penales === 'gana_a' ? item.equipo_a : item.equipo_b} PK)` : '';
+                        const ofiPenalesText = item.ganador_penales_oficial ? ` (${item.ganador_penales_oficial === 'gana_a' ? item.equipo_a : item.equipo_b} PK)` : '';
+                        const titleText = `${item.equipo_a} vs ${item.equipo_b} | Pronóstico: ${item.no_aposto ? 'Ninguno' : `${item.goles_a}-${item.goles_b}${predPenalesText}`} | Oficial: ${item.goles_a_oficial !== null ? `${item.goles_a_oficial}-${item.goles_b_oficial}${ofiPenalesText}` : 'Pendiente'}`;
                         return html`
                           <div key=${item.partido_id} class="flex flex-col items-center justify-center p-1 rounded bg-slate-50/50 border border-slate-100" title=${titleText}>
                             <div class="flex items-center justify-center space-x-1">
                               <img src=${getFlagUrl(item.equipo_a)} class="w-4 h-2.5 object-cover rounded shadow-xs" alt=${item.equipo_a} />
-                              <span class="text-[9.5px] font-black text-slate-800">
-                                ${item.no_aposto ? '-' : `${item.goles_a} - ${item.goles_b}`}
+                              <span class="text-[9.5px] font-black text-slate-800 flex items-center">
+                                <span>${item.no_aposto ? '-' : `${item.goles_a} - ${item.goles_b}`}</span>
+                                ${item.prediccion_penales 
+                                  ? html`<span class="text-[7.5px] text-amber-500 font-bold ml-1" title="Ganador por penales: ${item.prediccion_penales === 'gana_a' ? item.equipo_a : item.equipo_b}">(PK)</span>`
+                                  : ''}
                               </span>
                               <img src=${getFlagUrl(item.equipo_b)} class="w-4 h-2.5 object-cover rounded shadow-xs" alt=${item.equipo_b} />
                             </div>
@@ -239,13 +244,13 @@ export function LeaderboardView({ leaderboard, session }) {
                                   ? html`<span class="inline-flex items-center px-1 py-0.2 rounded text-[7px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 animate-pulse">Pend.</span>`
                                   : html`
                                       <span class="inline-flex items-center px-1 py-0.2 rounded text-[7px] font-black uppercase tracking-wider ${
-                                        item.puntos_ganados === 2
+                                        item.puntos_ganados >= 2
                                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
                                           : item.puntos_ganados === 1
                                             ? 'bg-blue-50 text-blue-700 border border-blue-100'
                                             : 'bg-rose-50 text-rose-700 border border-rose-100'
                                       }">
-                                        ${item.puntos_ganados === 2 ? '+2' : item.puntos_ganados === 1 ? '+1' : '0'} Pts
+                                        ${item.puntos_ganados > 0 ? `+${item.puntos_ganados}` : '0'} Pts
                                       </span>
                                     `
                               }
@@ -328,20 +333,28 @@ export function LeaderboardView({ leaderboard, session }) {
                         <div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
                           ${user.ultimos_pronosticos && user.ultimos_pronosticos.length > 0
                             ? user.ultimos_pronosticos.map((item) => {
-                                const titleText = `${item.equipo_a} vs ${item.equipo_b} ${item.goles_a_oficial !== null ? `(Oficial: ${item.goles_a_oficial}-${item.goles_b_oficial})` : '(Pendiente)'}`;
+                                const predPenalesText = item.prediccion_penales ? ` (${item.prediccion_penales === 'gana_a' ? item.equipo_a : item.equipo_b} PK)` : '';
+                                const ofiPenalesText = item.ganador_penales_oficial ? ` (${item.ganador_penales_oficial === 'gana_a' ? item.equipo_a : item.equipo_b} PK)` : '';
+                                const titleText = `${item.equipo_a} vs ${item.equipo_b} | Pronóstico: ${item.no_aposto ? 'Ninguno' : `${item.goles_a}-${item.goles_b}${predPenalesText}`} | Oficial: ${item.goles_a_oficial !== null ? `${item.goles_a_oficial}-${item.goles_b_oficial}${ofiPenalesText}` : 'Pendiente'}`;
                                 return html`
                                   <div key=${item.partido_id} class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 bg-white shadow-2xs max-w-[125px] w-full text-center hover:bg-slate-50 transition-colors" title=${titleText}>
                                     <div class="flex items-center justify-center space-x-1">
                                       <img src=${getFlagUrl(item.equipo_a)} class="w-5 h-3 object-cover rounded border border-slate-100" alt=${item.equipo_a} />
-                                      <span class="font-black text-slate-800 text-[10px]">
-                                        ${item.no_aposto ? '-' : `${item.goles_a}-${item.goles_b}`}
+                                      <span class="font-black text-slate-800 text-[10px] flex items-center">
+                                        <span>${item.no_aposto ? '-' : `${item.goles_a}-${item.goles_b}`}</span>
+                                        ${item.prediccion_penales 
+                                          ? html`<span class="text-[7.5px] text-amber-500 font-bold ml-1" title="Ganador por penales: ${item.prediccion_penales === 'gana_a' ? item.equipo_a : item.equipo_b}">(PK)</span>`
+                                          : ''}
                                       </span>
                                       <img src=${getFlagUrl(item.equipo_b)} class="w-5 h-3 object-cover rounded border border-slate-100" alt=${item.equipo_b} />
                                     </div>
                                     
                                     ${item.goles_a_oficial !== null && html`
-                                      <div class="text-[8px] text-slate-500 font-bold mt-0.5 leading-none">
-                                        Ofi: ${item.goles_a_oficial}-${item.goles_b_oficial}
+                                      <div class="text-[8px] text-slate-500 font-bold mt-0.5 leading-none flex items-center justify-center">
+                                        <span>Ofi: ${item.goles_a_oficial}-${item.goles_b_oficial}</span>
+                                        ${item.ganador_penales_oficial 
+                                          ? html`<span class="text-[7.5px] text-amber-600 font-bold ml-0.5" title="Ganador oficial por penales: ${item.ganador_penales_oficial === 'gana_a' ? item.equipo_a : item.equipo_b}">(PK)</span>` 
+                                          : ''}
                                       </div>
                                     `}
                                     
@@ -352,13 +365,15 @@ export function LeaderboardView({ leaderboard, session }) {
                                           ? html`<span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 animate-pulse">Pend.</span>`
                                           : html`
                                               <span class="inline-flex items-center px-1 py-0.2 rounded text-[8px] font-black uppercase tracking-wider ${
-                                                item.puntos_ganados === 2
+                                                item.puntos_ganados >= 2
                                                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-100'
                                                   : item.puntos_ganados === 1
                                                     ? 'bg-blue-50 text-blue-700 border border-blue-100'
                                                     : 'bg-rose-50 text-rose-700 border border-rose-100'
                                               }">
-                                                ${item.puntos_ganados === 2 ? '+2 Pts' : item.puntos_ganados === 1 ? '+1 Pt' : '0 Pts'}
+                                                ${item.puntos_ganados > 0 
+                                                  ? `+${item.puntos_ganados} ${item.puntos_ganados === 1 ? 'Pt' : 'Pts'}` 
+                                                  : '0 Pts'}
                                               </span>
                                             `
                                       }

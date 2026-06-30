@@ -330,7 +330,7 @@ class SupabaseRealClient {
     // 3.5. Obtener los 2 últimos partidos cerrados
     const { data: ultimosJugados, error: ujError } = await this.client
       .from('view_partidos_pasados')
-      .select('id, numero_partido, fecha_hora, equipo_a, equipo_b, goles_a, goles_b, resultado')
+      .select('id, numero_partido, fecha_hora, equipo_a, equipo_b, goles_a, goles_b, resultado, ganador_penales')
       .order('fecha_hora', { ascending: false })
       .order('numero_partido', { ascending: false })
       .limit(2);
@@ -340,7 +340,7 @@ class SupabaseRealClient {
       const matchIds = ultimosJugados.map(m => m.id);
       const { data: pronosUltimos, error: puError } = await this.client
         .from('pronosticos')
-        .select('usuario_id, partido_id, prediccion, goles_a, goles_b, puntos_ganados')
+        .select('usuario_id, partido_id, prediccion, goles_a, goles_b, prediccion_penales, puntos_ganados')
         .in('partido_id', matchIds);
       
       if (!puError && pronosUltimos) {
@@ -353,6 +353,7 @@ class SupabaseRealClient {
             prediccion: p.prediccion,
             goles_a: p.goles_a,
             goles_b: p.goles_b,
+            prediccion_penales: p.prediccion_penales,
             puntos_ganados: p.puntos_ganados
           });
         });
@@ -431,9 +432,11 @@ class SupabaseRealClient {
           goles_a_oficial: partido.goles_a,
           goles_b_oficial: partido.goles_b,
           resultado_oficial: partido.resultado,
+          ganador_penales_oficial: partido.ganador_penales,
           prediccion: pr.prediccion,
           goles_a: pr.goles_a,
           goles_b: pr.goles_b,
+          prediccion_penales: pr.prediccion_penales,
           puntos_ganados: pr.puntos_ganados,
           no_aposto: false
         } : {
@@ -444,9 +447,11 @@ class SupabaseRealClient {
           goles_a_oficial: partido.goles_a,
           goles_b_oficial: partido.goles_b,
           resultado_oficial: partido.resultado,
+          ganador_penales_oficial: partido.ganador_penales,
           prediccion: null,
           goles_a: null,
           goles_b: null,
+          prediccion_penales: null,
           puntos_ganados: 0,
           no_aposto: true
         };
