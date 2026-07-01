@@ -50,20 +50,23 @@ BEGIN
         LOOP
             IF NEW.resultado IS NULL OR NEW.goles_a IS NULL OR NEW.goles_b IS NULL THEN
                 puntos_nuevos := 0;
-            ELSIF r.prediccion = NEW.resultado THEN
-                puntos_nuevos := 1;
-                IF r.goles_a = NEW.goles_a AND r.goles_b = NEW.goles_b THEN
-                    puntos_nuevos := 2;
+            ELSE
+                -- Puntos base por acierto de ganador/empate
+                IF r.prediccion = NEW.resultado THEN
+                    puntos_nuevos := 1;
+                    IF r.goles_a = NEW.goles_a AND r.goles_b = NEW.goles_b THEN
+                        puntos_nuevos := 2;
+                    END IF;
+                ELSE
+                    puntos_nuevos := 0;
                 END IF;
 
-                -- Bonificación por penales en caso de empate (+1 punto)
+                -- Bonificación por penales en caso de empate (+1 punto), independiente de si acertó el resultado principal o no
                 IF NEW.resultado = 'empate' 
                    AND NEW.ganador_penales IS NOT NULL 
                    AND r.prediccion_penales = NEW.ganador_penales THEN
                     puntos_nuevos := puntos_nuevos + 1;
                 END IF;
-            ELSE
-                puntos_nuevos := 0;
             END IF;
 
             puntos_anteriores := r.puntos_ganados;

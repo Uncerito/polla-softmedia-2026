@@ -115,15 +115,15 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
     partido.pronostico_goles_b !== undefined &&
     String(partido.pronostico_goles_a) === String(userGolesA) &&
     String(partido.pronostico_goles_b) === String(userGolesB) &&
-    (Number(userGolesA) === Number(userGolesB) && partido.fase !== 'Grupos'
+    (partido.fase !== 'Grupos'
       ? (partido.pronostico_penales !== null && partido.pronostico_penales !== undefined && partido.pronostico_penales === userPenales)
       : true);
 
   const handleSaveClick = () => {
-    if (userGolesA !== '' && userGolesB !== '' && Number(userGolesA) === Number(userGolesB) && partido.fase !== 'Grupos') {
+    if (partido.fase !== 'Grupos' && !userPenales) {
       setShowPenalesModal(true);
     } else {
-      onPredict(userGolesA, userGolesB, null);
+      onPredict(userGolesA, userGolesB, partido.fase !== 'Grupos' ? userPenales : null);
     }
   };
 
@@ -266,15 +266,28 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
                     </div>
                     <div class="h-px bg-white/5 my-1"></div>
                     <div class="flex items-center justify-center font-black uppercase tracking-wider ${partido.puntos_pronostico > 0 ? 'text-[#8efad4]' : 'text-rose-400'}">
-                      ${partido.puntos_pronostico === 3 
-                        ? '✓ ¡Score Exacto + Penales! (+3 Pts)'
-                        : partido.puntos_pronostico === 2 
-                          ? (partido.resultado === 'empate' && partido.ganador_penales && partido.pronostico_penales === partido.ganador_penales 
-                              ? '✓ Empate + Penales (+2 Pts)' 
-                              : '✓ ¡Score Exacto! (+2 Pts)')
-                          : partido.puntos_pronostico === 1 
-                            ? '✓ Acertado (+1 Pts)' 
-                            : '✗ No Acertado (0 Pts)'}
+                      ${(() => {
+                        const hasPrediction = partido.pronostico_goles_a !== null && partido.pronostico_goles_a !== undefined;
+                        const acertoMarcador = hasPrediction && Number(partido.pronostico_goles_a) === Number(partido.goles_a) && Number(partido.pronostico_goles_b) === Number(partido.goles_b);
+                        const acertoResultado = partido.pronostico_usuario === partido.resultado;
+                        const acertoPenales = partido.resultado === 'empate' && partido.ganador_penales && partido.pronostico_penales === partido.ganador_penales;
+
+                        if (acertoMarcador && acertoPenales) {
+                          return '✓ ¡Score Exacto + Penales! (+3 Pts)';
+                        } else if (acertoMarcador) {
+                          return '✓ ¡Score Exacto! (+2 Pts)';
+                        } else if (acertoResultado && acertoPenales) {
+                          return '✓ Empate + Penales (+2 Pts)';
+                        } else if (acertoResultado) {
+                          return '✓ Acertado (+1 Pts)';
+                        } else if (acertoPenales) {
+                          return '✓ Ganador Penales (+1 Pts)';
+                        } else if (partido.puntos_pronostico > 0) {
+                          return `✓ Acertado (+${partido.puntos_pronostico} Pts)`;
+                        } else {
+                          return '✗ No Acertado (0 Pts)';
+                        }
+                      })()}
                     </div>
                   </div>
                 `
@@ -298,7 +311,17 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
                                       (${partido.pronostico_penales === 'gana_a' ? partido.equipo_a : partido.equipo_b} PK)
                                     </span>
                                   ` 
-                                : ''}
+                                : (partido.fase !== 'Grupos' 
+                                  ? html`
+                                      <span 
+                                        onClick=${() => { if (!isLocked) setShowPenalesModal(true); }}
+                                        class="text-[9px] text-amber-450/80 ml-1.5 font-bold cursor-pointer underline hover:text-amber-300 animate-pulse"
+                                        title="Seleccionar ganador por penales"
+                                      >
+                                        (Elegir PK)
+                                      </span>
+                                    `
+                                  : '')}
                             `
                           : 'Sin pronóstico'}
                       </span>
@@ -347,7 +370,7 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
           <div class="bg-[#111827] border border-slate-700/80 rounded-2xl p-5 max-w-sm w-full text-center space-y-4 shadow-2xl relative">
             <h3 class="text-xs font-black font-outfit uppercase tracking-widest text-[#22c55e]">Definición por Penales</h3>
             <p class="text-[11px] text-slate-350 leading-relaxed font-semibold">
-              Has pronosticado un empate en un partido de fase eliminatoria (${partido.fase}). ¿Quién se clasificará por penales?
+              Definición por Penales (${partido.fase}): Si el partido oficial en la vida real termina en empate, ¿quién se clasificará por penales?
             </p>
             
             <div class="grid grid-cols-2 gap-3 pt-1">

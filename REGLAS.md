@@ -7,7 +7,8 @@
 ## 1. Sistema de Puntuación
 * **Acierto de Resultado (Ganador/Empate):** Sumas **+1 punto** si aciertas el ganador o empate del partido (es decir, la dirección del resultado: gana local, gana visita o empate).
 * **Acierto del Marcador Exacto (Punto Extra):** Sumas **+1 punto adicional** (haciendo un total de **2 puntos** para ese partido) si además de acertar el ganador/empate, tu pronóstico coincide exactamente con la cantidad de goles anotados por cada equipo (ej: si pronosticas 2 - 1 y el partido termina 2 - 1).
-* **Fallas:** Si fallas el resultado del partido (ej: pronosticas victoria del equipo A pero hay empate o victoria del equipo B), obtienes **0 puntos**, independientemente de los goles.
+* **Acierto de Ganador por Penales (Playoffs):** En las fases eliminatorias, todos los usuarios tienen acceso a pronosticar quién ganará la tanda de penales, independientemente de si pronosticaron un empate o la victoria de un equipo en tiempo regular. Si aciertas el ganador de los penales, sumas **+1 punto** de forma independiente.
+* **Fallas:** Si fallas el resultado regular del partido (ej: pronosticas victoria del equipo A pero hay empate o victoria del equipo B), obtienes **0 puntos** por la puntuación regular. Sin embargo, en las fases eliminatorias, si logras acertar el ganador de los penales, recibirás **1 punto** por este acierto de forma independiente.
 
 ## 2. Plazo de Registro y Bloqueo de Pronósticos
 Para garantizar la transparencia y evitar fraudes o ventajas competitivas:

@@ -53,30 +53,41 @@ export function RulesView() {
               Los puntos se calculan automáticamente de forma acumulativa según el acierto en cada partido registrado:
             </p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
               <!-- Acierto Resultado -->
-              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 relative overflow-hidden flex flex-col justify-between">
-                <div class="absolute right-3 top-3 text-[#008f5c]/15"><${Target} size=${40} /></div>
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center space-x-1.5">
                     <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#005a36] text-[10px] font-bold">+1 Pts</span>
                     <span class="text-[10px] font-extrabold text-[#008f5c] uppercase">Acierto Simple</span>
                   </div>
                   <h4 class="font-outfit font-bold text-xs text-slate-800 uppercase mt-2">Ganador o Empate</h4>
-                  <p class="text-[10px] text-slate-550 mt-1 leading-relaxed">Sumas 1 punto si aciertas el resultado general del partido (gana local, gana visita o empate), sin importar el score exacto.</p>
+                  <p class="text-[9.5px] text-slate-555 mt-1 leading-relaxed">Sumas 1 punto si aciertas el resultado general del partido (gana local, gana visita o empate), sin importar el score exacto.</p>
                 </div>
               </div>
               
               <!-- Acierto Score -->
-              <div class="bg-gradient-to-br from-amber-50/50 to-white border border-amber-200 rounded-xl p-3.5 relative overflow-hidden flex flex-col justify-between">
-                <div class="absolute right-3 top-3 text-amber-500/10"><${Award} size=${40} /></div>
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center space-x-1.5">
                     <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-bold">+1 Pts Extra</span>
                     <span class="text-[10px] font-extrabold text-amber-600 uppercase">Acierto Score</span>
                   </div>
                   <h4 class="font-outfit font-bold text-xs text-slate-800 uppercase mt-2">Marcador Exacto</h4>
-                  <p class="text-[10px] text-slate-550 mt-1 leading-relaxed">Sumas 1 punto adicional (un total de 2 puntos) si aciertas la cantidad exacta de goles anotados por cada selección.</p>
+                  <p class="text-[9.5px] text-slate-555 mt-1 leading-relaxed">Sumas 1 punto adicional (total de 2 puntos) si aciertas la cantidad exacta de goles anotados por cada selección.</p>
+                </div>
+              </div>
+
+              <!-- Acierto Penales -->
+              <div class="bg-gradient-to-br from-amber-50/50 to-white border border-amber-200 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute right-3 top-3 text-amber-500/10"><${Trophy} size=${30} /></div>
+                <div>
+                  <div class="flex items-center space-x-1.5">
+                    <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-bold">+1 Pts</span>
+                    <span class="text-[10px] font-extrabold text-amber-600 uppercase">Penales</span>
+                  </div>
+                  <h4 class="font-outfit font-bold text-xs text-slate-800 uppercase mt-2">Ganador Penales</h4>
+                  <p class="text-[9.5px] text-slate-555 mt-1 leading-relaxed">En eliminatorias, todos pueden elegir quién clasifica por penales. Si aciertas al ganador, sumas 1 punto de forma independiente.</p>
                 </div>
               </div>
             </div>
@@ -85,7 +96,7 @@ export function RulesView() {
           <div class="p-3 bg-rose-50 border border-rose-100 rounded-xl text-left">
             <span class="text-[8px] font-bold text-rose-700 uppercase tracking-widest block leading-none">Importante en caso de Fallar</span>
             <p class="text-[9px] text-rose-600 mt-1 font-semibold leading-relaxed">
-              Si no aciertas el ganador o empate, obtendrás 0 puntos de forma automática para ese encuentro, independientemente de si acertaste los goles de uno de los equipos.
+              Si no aciertas el ganador o empate, obtendrás 0 puntos para el resultado regular. Sin embargo, en fases eliminatorias, si aciertas el ganador de la tanda de penales, sí recibirás su respectivo punto (+1 Pt) de manera independiente.
             </p>
           </div>
         </div>

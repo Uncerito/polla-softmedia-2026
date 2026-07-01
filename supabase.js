@@ -247,7 +247,7 @@ class SupabaseRealClient {
           prediccion,
           goles_a: Number(golesA),
           goles_b: Number(golesB),
-          prediccion_penales: prediccion === 'empate' ? prediccionPenales : null,
+          prediccion_penales: prediccionPenales,
           creado_en: new Date().toISOString()
         })
         .eq('id', existente.id);
@@ -261,7 +261,7 @@ class SupabaseRealClient {
           prediccion,
           goles_a: Number(golesA),
           goles_b: Number(golesB),
-          prediccion_penales: prediccion === 'empate' ? prediccionPenales : null
+          prediccion_penales: prediccionPenales
         });
       if (error) throw error;
     }
