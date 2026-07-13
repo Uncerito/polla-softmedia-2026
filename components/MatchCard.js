@@ -55,7 +55,13 @@ const getTeamCharacter = (teamName) => {
     'Inglaterra': { emoji: '🦁', name: 'León Inglés' },
     'Croacia': { emoji: '🐆', name: 'Marta' },
     'Ghana': { emoji: '⭐', name: 'Estrella Negra' },
-    'Panamá': { emoji: '🦅', name: 'Águila Arpía' }
+    'Panamá': { emoji: '🦅', name: 'Águila Arpía' },
+    'República de Corea': { emoji: '🐯', name: 'Tigre' },
+    'Chequia': { emoji: '🏰', name: 'Castillo' },
+    'EE. UU.': { emoji: '🦅', name: 'Águila' },
+    'RI de Irán': { emoji: '🐆', name: 'Leopardo' },
+    'Islas de Cabo Verde': { emoji: '🦈', name: 'Tiburón' },
+    'Arabia Saudí': { emoji: '🐪', name: 'Camello' }
   };
   return characters[teamName] || { emoji: '⚽', name: 'Mascotita' };
 };
@@ -150,7 +156,7 @@ export function MatchCard({ partido, isSaving, onPredict, isUrgent }) {
         <div class="flex items-center justify-between text-[10px] font-bold tracking-wider mb-4 px-1 text-slate-300">
           <span class="flex items-center gap-1.5 uppercase font-outfit">
             <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            ${partido.grupo ? `Fase de Grupos · Grupo ${partido.grupo}` : partido.fase}
+            ${partido.grupo ? `Fase de Grupos · Grupo ${partido.grupo}` : (partido.numero_partido === 103 ? 'Tercer Puesto' : partido.fase)}
           </span>
           <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[9px] font-black uppercase tracking-widest font-outfit">
             Partido #${partido.numero_partido}

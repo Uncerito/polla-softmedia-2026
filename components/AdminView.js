@@ -119,7 +119,7 @@ export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating
             <div class="flex-grow w-full md:w-auto space-y-3">
               <div class="flex items-center justify-between">
                 <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[9px] font-bold uppercase border border-amber-200">
-                  Editar Partido #${partido.numero_partido} • ${partido.fase}
+                  Editar Partido #${partido.numero_partido} • ${partido.numero_partido === 103 ? 'Tercer Puesto' : partido.fase}
                 </span>
               </div>
               
@@ -187,7 +187,7 @@ export function AdminMatchRow({ partido, onUpdateGoals, onUpdateInfo, isUpdating
           `
         : html`
             <div>
-              <span class="px-2 py-0.5 rounded bg-[#e6f0ec] text-[#005a36] text-[9px] font-bold uppercase">Partido #${partido.numero_partido} • ${partido.fase}</span>
+              <span class="px-2 py-0.5 rounded bg-[#e6f0ec] text-[#005a36] text-[9px] font-bold uppercase">Partido #${partido.numero_partido} • ${partido.numero_partido === 103 ? 'Tercer Puesto' : partido.fase}</span>
               <span class="ml-2 text-[9px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">📅 ${getFormattedDateDisplay(partido.fecha_hora)}</span>
               <div class="flex items-center space-x-3 mt-1.5">
                 <img src=${getFlagUrl(partido.equipo_a)} class="w-8 h-5.5 rounded object-cover shadow-sm border border-slate-200" />

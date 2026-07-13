@@ -12,7 +12,8 @@ export function BracketView({ fixture = [] }) {
   const matches8 = fixture.filter(p => p.fase === 'Octavos');
   const matches4 = fixture.filter(p => p.fase === 'Cuartos');
   const matches2 = fixture.filter(p => p.fase === 'Semifinal');
-  const matches1 = fixture.filter(p => p.fase === 'Final');
+  const matches1 = fixture.filter(p => p.fase === 'Final' && p.numero_partido === 104);
+  const matches3 = fixture.filter(p => p.fase === 'Final' && p.numero_partido === 103);
 
   // Si no hay partidos cargados en la DB para estas fases, generamos los placeholders oficiales del fixture
   const renderTeam = (teamName, score, isWinner, isPenaltyWinner) => {
@@ -110,6 +111,10 @@ export function BracketView({ fixture = [] }) {
   const getMock1 = () => [
     { num: 104, a: 'Ganador M101', b: 'Ganador M102', label: 'Gran Final' },
   ];
+  
+  const getMock3 = () => [
+    { num: 103, a: 'Perdedor M101', b: 'Perdedor M102', label: 'Tercer Puesto' }
+  ];
 
   // Construir columnas reales o mockeadas
   const data16 = matches16.length > 0 ? matches16.map(p => ({ num: p.numero_partido, a: p.equipo_a, b: p.equipo_b, sa: p.goles_a, sb: p.goles_b, res: p.resultado, gp: p.ganador_penales, label: '16avos' })) : getMock16();
@@ -117,8 +122,9 @@ export function BracketView({ fixture = [] }) {
   const data4 = matches4.length > 0 ? matches4.map(p => ({ num: p.numero_partido, a: p.equipo_a, b: p.equipo_b, sa: p.goles_a, sb: p.goles_b, res: p.resultado, gp: p.ganador_penales, label: 'Cuartos' })) : getMock4();
   const data2 = matches2.length > 0 ? matches2.map(p => ({ num: p.numero_partido, a: p.equipo_a, b: p.equipo_b, sa: p.goles_a, sb: p.goles_b, res: p.resultado, gp: p.ganador_penales, label: 'Semifinal' })) : getMock2();
   const data1 = matches1.length > 0 ? matches1.map(p => ({ num: p.numero_partido, a: p.equipo_a, b: p.equipo_b, sa: p.goles_a, sb: p.goles_b, res: p.resultado, gp: p.ganador_penales, label: 'Final' })) : getMock1();
+  const data3 = matches3.length > 0 ? matches3.map(p => ({ num: p.numero_partido, a: p.equipo_a, b: p.equipo_b, sa: p.goles_a, sb: p.goles_b, res: p.resultado, gp: p.ganador_penales, label: 'Tercer Puesto' })) : getMock3();
 
-  const isMock = matches16.length === 0 && matches8.length === 0 && matches4.length === 0 && matches2.length === 0 && matches1.length === 0;
+  const isMock = matches16.length === 0 && matches8.length === 0 && matches4.length === 0 && matches2.length === 0 && matches1.length === 0 && matches3.length === 0;
 
   return html`
     <div class="space-y-6">
@@ -195,7 +201,7 @@ export function BracketView({ fixture = [] }) {
             </div>
           </div>
 
-          <!-- Ronda 5: Gran Final (2 equipos, 1 partido) -->
+          <!-- Ronda 5: Gran Final & Tercer Puesto -->
           <div class="bracket-column">
             <div class="bracket-header-title">Gran Final</div>
             <div class="flex flex-col justify-center h-full space-y-6">
@@ -205,6 +211,15 @@ export function BracketView({ fixture = [] }) {
                 </div>
               </div>
               ${data1.map(p => renderMatchNode(p.num, p.a, p.b, p.sa, p.sb, p.res, p.gp, p.label))}
+              
+              <!-- Partido por el Tercer Puesto -->
+              <div class="mt-8 border-t border-slate-200 pt-6">
+                <div class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center justify-between">
+                  <span>Tercer Puesto</span>
+                  <${Award} size=${12} class="text-amber-500" />
+                </div>
+                ${data3.map(p => renderMatchNode(p.num, p.a, p.b, p.sa, p.sb, p.res, p.gp, p.label))}
+              </div>
             </div>
           </div>
 

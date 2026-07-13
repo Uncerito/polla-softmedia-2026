@@ -54,7 +54,10 @@ export const getFlagUrl = (countryName) => {
     'Uzbekistán': 'uz',
     'Croacia': 'hr',
     'Ghana': 'gh',
-    'Panamá': 'pa'
+    'Panamá': 'pa',
+    'EE. UU.': 'us',
+    'RI de Irán': 'ir',
+    'Islas de Cabo Verde': 'cv'
   };
   const code = mapping[countryName];
   return code ? `https://flagcdn.com/w80/${code}.png` : `https://placehold.co/80x50/1f2937/ffffff?text=${(countryName || '').substring(0, 3).toUpperCase()}`;
