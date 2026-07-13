@@ -689,7 +689,12 @@ class SupabaseRealClient {
     const getMatchWinner = (matchNum, currentMatches) => {
       const match = currentMatches.find(m => m.numero_partido === matchNum);
       if (!match || match.resultado === null || match.resultado === '') return null;
-      return match.resultado === 'gana_a' ? match.equipo_a : match.equipo_b;
+      if (match.resultado === 'gana_a') return match.equipo_a;
+      if (match.resultado === 'gana_b') return match.equipo_b;
+      if (match.resultado === 'empate') {
+        return match.ganador_penales === 'gana_a' ? match.equipo_a : match.equipo_b;
+      }
+      return null;
     };
 
     const knockoutProgressions = [
