@@ -868,3 +868,24 @@ body.theme-light .wc-bracket-dark .bracket-team-score {
 body.theme-light .wc-bracket-dark .bracket-footer-mini {
   color: #000000 !important;
 }
+
+/* Animations for Congratulations Podium View */
+@keyframes floatTrophy {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+.animate-float-trophy {
+  animation: floatTrophy 4s ease-in-out infinite;
+}
+
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-gold-badge {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 3s linear infinite;
+}

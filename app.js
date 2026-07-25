@@ -12,6 +12,7 @@ import { GroupStandingsView } from './components/GroupStandingsView.js?v=1.1.0';
 import { StatsView } from './components/StatsView.js?v=1.1.0';
 import { RulesView } from './components/RulesView.js?v=1.1.0';
 import { BracketView } from './components/BracketView.js?v=1.2.0';
+import { CongratulationsView } from './components/CongratulationsView.js?v=1.0.0';
 
 const html = htm.bind(React.createElement);
 
@@ -44,7 +45,7 @@ window.cambiarClaveDentroDelPanel = async () => {
 
 export function App() {
   const [session, setSession] = useState(null);
-  const [currentView, setCurrentView] = useState('stats');
+  const [currentView, setCurrentView] = useState('congratulations');
   const [loading, setLoading] = useState(true);
 
   const [theme, setTheme] = useState(() => {
@@ -137,7 +138,12 @@ export function App() {
         setFullFixture(currentFixture);
       }
 
-      if (currentView === 'stats') {
+      if (currentView === 'congratulations') {
+        if (leaderboard.length === 0 || force) {
+          const lead = await db.getLeaderboard();
+          setLeaderboard(lead);
+        }
+      } else if (currentView === 'stats') {
         setFixture(currentFixture);
         if (leaderboard.length === 0 || force) {
           const lead = await db.getLeaderboard();
@@ -189,7 +195,7 @@ export function App() {
         // Primero inyectamos la sesión para desmontar el bloque de login
         setSession(activeSession);
         // Forzamos el enrutamiento interno
-        setCurrentView('stats');
+        setCurrentView('congratulations');
         addToast(`¡Bienvenido, ${activeSession.user.nombre}!`);
       } else {
         throw new Error("No se pudo recuperar la sesión activa.");
@@ -239,6 +245,7 @@ export function App() {
   }
 
   const navItems = [
+    { id: 'congratulations', name: 'FELICITACIONES', icon: Trophy },
     { id: 'stats', name: 'ESTADÍSTICAS', icon: BarChart3 },
     { id: 'dashboard', name: 'MIS PRONÓSTICOS', icon: Calendar },
     { id: 'groups', name: 'GRUPOS DEL MUNDIAL', icon: Users },
@@ -372,6 +379,11 @@ export function App() {
 
           <div class="flex-1 flex flex-col min-w-0">
             <main class="flex-grow w-full px-4 md:px-6 py-5 relative z-10">
+              ${currentView === 'congratulations' && html`
+                <div class="dashboard-assemble">
+                  <${CongratulationsView} leaderboard=${leaderboard} session=${session} onNavigate=${(v) => setCurrentView(v)} />
+                </div>
+              `}
               ${currentView === 'stats' && html`
                 <${StatsView} session=${session} fixture=${fixture} leaderboard=${leaderboard} />
               `}
