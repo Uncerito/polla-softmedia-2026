@@ -163,8 +163,7 @@ body.theme-light .sidebar-switch-active * {
 .main-app-container .bg-\[#008f5c\],
 .main-app-container .bg-\[#008f5c\] *,
 .main-app-container .bg-\[#005a36\],
-.main-app-container .bg-\[#005a36\] *,
-.main-app-container .bg-gradient-to-br {
+.main-app-container .bg-\[#005a36\] * {
   color: #ffffff !important;
 }
 
